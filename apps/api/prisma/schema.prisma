@@ -1,0 +1,550 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ── Enums ──
+
+enum RiskLevel {
+  SAFE
+  CAUTION
+  PROHIBITED
+}
+
+enum EntryStatus {
+  ACTIVE
+  EXITED
+  OVERSTAY_ALERT
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum UserRole {
+  WORKER
+  SUPERVISOR
+  ADMIN
+  CITIZEN
+}
+
+enum EntryState {
+  IDLE
+  SCANNED
+  CHECKLIST_PENDING
+  ENTERED
+  ACTIVE
+  EXITED
+  OVERSTAY_ALERT
+  SOS_TRIGGERED
+  GAS_ALERT
+  CHECKIN_MISSED
+}
+
+enum ShiftStatus {
+  ACTIVE
+  COMPLETED
+  EXCEEDED_LIMIT
+}
+
+enum GrievanceStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+enum CertificationType {
+  SAFETY_TRAINING
+  CONFINED_SPACE
+  FIRST_AID
+  GAS_DETECTION
+  PPE_USAGE
+  MEDICAL_FITNESS
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  SCAN
+  ENTRY_START
+  ENTRY_EXIT
+  ALERT_TRIGGERED
+  ALERT_ACKNOWLEDGED
+  SOS_ACTIVATED
+  CHECKIN_RESPONSE
+  CHECKIN_MISSED
+  REPORT_GENERATED
+  SETTING_CHANGED
+}
+
+// ── Core Models ──
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  email            String    @unique
+  passwordHash     String    @map("password_hash")
+  role             UserRole  @default(WORKER)
+  language         String    @default("en")
+  pushSubscription Json?     @map("push_subscription")
+  isActive         Boolean   @default(true) @map("is_active")
+  lastLoginAt      DateTime? @map("last_login_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  worker     Worker?
+  supervisor Supervisor?
+  auditLogs  AuditLog[]
+
+  @@map("users")
+}
+
+model Supervisor {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
+  name      String
+  phone     String
+  area      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workers Worker[]
+  tasks   Task[]
+
+  @@map("supervisors")
+}
+
+model Worker {
+  id                    String    @id @default(uuid()) @db.Uuid
+  userId                String    @unique @map("user_id") @db.Uuid
+  employeeId            String    @unique @map("employee_id")
+  name                  String
+  phone                 String
+  supervisorId          String?   @map("supervisor_id") @db.Uuid
+  dateOfBirth           DateTime? @map("date_of_birth")
+  bloodGroup            String?   @map("blood_group")
+  emergencyContactName  String?   @map("emergency_contact_name")
+  emergencyContactPhone String?   @map("emergency_contact_phone")
+  medicalNotes          String?   @map("medical_notes")
+  photoUrl              String?   @map("photo_url")
+  createdAt             DateTime  @default(now()) @map("created_at")
+
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  supervisor     Supervisor?           @relation(fields: [supervisorId], references: [id])
+  entryLogs      EntryLog[]
+  incidents      Incident[]
+  shifts         Shift[]
+  certifications WorkerCertification[]
+  healthChecks   HealthCheck[]
+  checkIns       CheckIn[]
+
+  @@map("workers")
+}
+
+model Manhole {
+  id                  String    @id @default(uuid()) @db.Uuid
+  qrCodeId            String    @unique @map("qr_code_id")
+  latitude            Float
+  longitude           Float
+  area                String
+  address             String?
+  depth               Float?    @default(0)
+  diameter            Float?    @default(0)
+  maxWorkers          Int       @default(2) @map("max_workers")
+  riskLevel           RiskLevel @default(SAFE) @map("risk_level")
+  riskScore           Float     @default(0) @map("risk_score")
+  geoFenceRadius      Float     @default(50) @map("geo_fence_radius")
+  lastCleanedAt       DateTime? @map("last_cleaned_at")
+  nextMaintenanceAt   DateTime? @map("next_maintenance_at")
+  hasGasSensor        Boolean   @default(false) @map("has_gas_sensor")
+  sensorDeviceId      String?   @map("sensor_device_id")
+  nearestHospital     String?   @map("nearest_hospital")
+  nearestHospitalDist Float?    @map("nearest_hospital_dist")
+  nearestFireStation  String?   @map("nearest_fire_station")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  entryLogs    EntryLog[]
+  incidents    Incident[]
+  riskLogs     RiskLog[]
+  blockages    Blockage[]
+  gasReadings  GasReading[]
+  maintenances Maintenance[]
+  grievances   Grievance[]
+
+  @@index([area])
+  @@index([riskLevel])
+  @@map("manholes")
+}
+
+model EntryLog {
+  id                     String      @id @default(uuid()) @db.Uuid
+  workerId               String      @map("worker_id") @db.Uuid
+  manholeId              String      @map("manhole_id") @db.Uuid
+  taskId                 String?     @map("task_id") @db.Uuid
+  shiftId                String?     @map("shift_id") @db.Uuid
+  entryTime              DateTime    @default(now()) @map("entry_time")
+  exitTime               DateTime?   @map("exit_time")
+  allowedDurationMinutes Int         @default(45) @map("allowed_duration_minutes")
+  status                 EntryStatus @default(ACTIVE)
+  state                  EntryState  @default(ENTERED)
+  geoLatitude            Float?      @map("geo_latitude")
+  geoLongitude           Float?      @map("geo_longitude")
+  geoVerified            Boolean     @default(false) @map("geo_verified")
+  checklistCompleted     Boolean     @default(false) @map("checklist_completed")
+  teamEntryId            String?     @map("team_entry_id") @db.Uuid
+  isOfflineEntry         Boolean     @default(false) @map("is_offline_entry")
+  syncedAt               DateTime?   @map("synced_at")
+  notes                  String?
+  createdAt              DateTime    @default(now()) @map("created_at")
+  updatedAt              DateTime    @updatedAt @map("updated_at")
+
+  worker      Worker       @relation(fields: [workerId], references: [id])
+  manhole     Manhole      @relation(fields: [manholeId], references: [id])
+  task        Task?        @relation(fields: [taskId], references: [id])
+  shift       Shift?       @relation(fields: [shiftId], references: [id])
+  checklist   Checklist?
+  checkIns    CheckIn[]
+  healthCheck HealthCheck?
+
+  @@index([status])
+  @@index([workerId])
+  @@index([manholeId])
+  @@index([entryTime])
+  @@index([teamEntryId])
+  @@map("entry_logs")
+}
+
+model Incident {
+  id           String           @id @default(uuid()) @db.Uuid
+  manholeId    String           @map("manhole_id") @db.Uuid
+  workerId     String?          @map("worker_id") @db.Uuid
+  entryLogId   String?          @map("entry_log_id") @db.Uuid
+  incidentType String           @map("incident_type")
+  description  String?
+  severity     IncidentSeverity @default(MEDIUM)
+  resolved     Boolean          @default(false)
+  resolvedAt   DateTime?        @map("resolved_at")
+  resolvedBy   String?          @map("resolved_by") @db.Uuid
+  timestamp    DateTime         @default(now())
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  manhole Manhole @relation(fields: [manholeId], references: [id])
+  worker  Worker? @relation(fields: [workerId], references: [id])
+
+  @@index([severity])
+  @@index([manholeId])
+  @@index([timestamp])
+  @@map("incidents")
+}
+
+model RiskLog {
+  id             String    @id @default(uuid()) @db.Uuid
+  manholeId      String    @map("manhole_id") @db.Uuid
+  riskScore      Float     @map("risk_score")
+  blockageFreq   Float     @map("blockage_freq")
+  incidentCount  Int       @map("incident_count")
+  rainfallFactor Float     @map("rainfall_factor")
+  areaRisk       Float     @map("area_risk")
+  gasFactor      Float     @default(0) @map("gas_factor")
+  weatherFactor  Float     @default(0) @map("weather_factor")
+  computedLevel  RiskLevel @map("computed_level")
+  calculatedAt   DateTime  @default(now()) @map("calculated_at")
+
+  manhole Manhole @relation(fields: [manholeId], references: [id])
+
+  @@index([manholeId])
+  @@index([calculatedAt])
+  @@map("risk_logs")
+}
+
+model Blockage {
+  id         String           @id @default(uuid()) @db.Uuid
+  manholeId  String           @map("manhole_id") @db.Uuid
+  reportedAt DateTime         @default(now()) @map("reported_at")
+  resolvedAt DateTime?        @map("resolved_at")
+  severity   IncidentSeverity @default(LOW)
+
+  manhole Manhole @relation(fields: [manholeId], references: [id])
+
+  @@index([manholeId])
+  @@map("blockages")
+}
+
+model AlertRecord {
+  id             String    @id @default(uuid()) @db.Uuid
+  entryLogId     String    @map("entry_log_id") @db.Uuid
+  alertType      String    @map("alert_type")
+  sentTo         String    @map("sent_to")
+  sentAt         DateTime  @default(now()) @map("sent_at")
+  channel        String    @default("push")
+  acknowledged   Boolean   @default(false)
+  acknowledgedAt DateTime? @map("acknowledged_at")
+  acknowledgedBy String?   @map("acknowledged_by") @db.Uuid
+
+  @@index([entryLogId])
+  @@index([sentAt])
+  @@map("alert_records")
+}
+
+// ── Safety Feature Models ──
+
+model CheckIn {
+  id          String    @id @default(uuid()) @db.Uuid
+  entryLogId  String    @map("entry_log_id") @db.Uuid
+  workerId    String    @map("worker_id") @db.Uuid
+  promptedAt  DateTime  @map("prompted_at")
+  respondedAt DateTime? @map("responded_at")
+  wasOnTime   Boolean   @default(false) @map("was_on_time")
+  method      String    @default("tap")
+
+  entryLog EntryLog @relation(fields: [entryLogId], references: [id])
+  worker   Worker   @relation(fields: [workerId], references: [id])
+
+  @@index([entryLogId])
+  @@index([workerId])
+  @@map("check_ins")
+}
+
+model Checklist {
+  id                 String    @id @default(uuid()) @db.Uuid
+  entryLogId         String    @unique @map("entry_log_id") @db.Uuid
+  items              Json
+  allPassed          Boolean   @default(false) @map("all_passed")
+  supervisorApproved Boolean   @default(false) @map("supervisor_approved")
+  completedAt        DateTime? @map("completed_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  entryLog EntryLog @relation(fields: [entryLogId], references: [id])
+
+  @@map("checklists")
+}
+
+model GasReading {
+  id             String   @id @default(uuid()) @db.Uuid
+  manholeId      String   @map("manhole_id") @db.Uuid
+  h2s            Float    @default(0)
+  ch4            Float    @default(0)
+  co             Float    @default(0)
+  o2             Float    @default(20.9)
+  co2            Float    @default(0)
+  nh3            Float    @default(0)
+  temperature    Float?
+  humidity       Float?
+  isDangerous    Boolean  @default(false) @map("is_dangerous")
+  alertTriggered Boolean  @default(false) @map("alert_triggered")
+  source         String   @default("sensor")
+  readAt         DateTime @default(now()) @map("read_at")
+
+  manhole Manhole @relation(fields: [manholeId], references: [id])
+
+  @@index([manholeId])
+  @@index([readAt])
+  @@index([isDangerous])
+  @@map("gas_readings")
+}
+
+model HealthCheck {
+  id           String   @id @default(uuid()) @db.Uuid
+  entryLogId   String   @unique @map("entry_log_id") @db.Uuid
+  workerId     String   @map("worker_id") @db.Uuid
+  feelingOk    Boolean  @map("feeling_ok")
+  symptoms     String[] @default([])
+  photoUrl     String?  @map("photo_url")
+  notes        String?
+  needsMedical Boolean  @default(false) @map("needs_medical")
+  completedAt  DateTime @default(now()) @map("completed_at")
+
+  entryLog EntryLog @relation(fields: [entryLogId], references: [id])
+  worker   Worker   @relation(fields: [workerId], references: [id])
+
+  @@index([workerId])
+  @@map("health_checks")
+}
+
+model Shift {
+  id                      String      @id @default(uuid()) @db.Uuid
+  workerId                String      @map("worker_id") @db.Uuid
+  startTime               DateTime    @map("start_time")
+  endTime                 DateTime?   @map("end_time")
+  status                  ShiftStatus @default(ACTIVE)
+  entryCount              Int         @default(0) @map("entry_count")
+  totalUndergroundMinutes Int         @default(0) @map("total_underground_minutes")
+  breaksTaken             Int         @default(0) @map("breaks_taken")
+  fatigueScore            Float       @default(0) @map("fatigue_score")
+  notes                   String?
+
+  worker    Worker     @relation(fields: [workerId], references: [id])
+  entryLogs EntryLog[]
+
+  @@index([workerId])
+  @@index([status])
+  @@map("shifts")
+}
+
+model Task {
+  id                String    @id @default(uuid()) @db.Uuid
+  supervisorId      String    @map("supervisor_id") @db.Uuid
+  manholeId         String?   @map("manhole_id") @db.Uuid
+  assignedWorkerIds String[]  @map("assigned_worker_ids")
+  taskType          String    @map("task_type")
+  description       String?
+  allowedDuration   Int       @default(45) @map("allowed_duration")
+  priority          String    @default("normal")
+  status            String    @default("pending")
+  scheduledAt       DateTime? @map("scheduled_at")
+  startedAt         DateTime? @map("started_at")
+  completedAt       DateTime? @map("completed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  supervisor Supervisor @relation(fields: [supervisorId], references: [id])
+  entryLogs  EntryLog[]
+
+  @@index([supervisorId])
+  @@index([status])
+  @@map("tasks")
+}
+
+model WorkerCertification {
+  id                String            @id @default(uuid()) @db.Uuid
+  workerId          String            @map("worker_id") @db.Uuid
+  type              CertificationType
+  certificateNumber String?           @map("certificate_number")
+  issuedAt          DateTime          @map("issued_at")
+  expiresAt         DateTime          @map("expires_at")
+  issuedBy          String?           @map("issued_by")
+  documentUrl       String?           @map("document_url")
+  isValid           Boolean           @default(true) @map("is_valid")
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  worker Worker @relation(fields: [workerId], references: [id])
+
+  @@index([workerId])
+  @@index([expiresAt])
+  @@map("worker_certifications")
+}
+
+model Maintenance {
+  id            String            @id @default(uuid()) @db.Uuid
+  manholeId     String            @map("manhole_id") @db.Uuid
+  type          String
+  status        MaintenanceStatus @default(SCHEDULED)
+  scheduledAt   DateTime          @map("scheduled_at")
+  completedAt   DateTime?         @map("completed_at")
+  assignedTeam  String?           @map("assigned_team")
+  notes         String?
+  autoGenerated Boolean           @default(false) @map("auto_generated")
+  createdAt     DateTime          @default(now()) @map("created_at")
+
+  manhole Manhole @relation(fields: [manholeId], references: [id])
+
+  @@index([manholeId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("maintenances")
+}
+
+model Grievance {
+  id              String          @id @default(uuid()) @db.Uuid
+  manholeId       String?         @map("manhole_id") @db.Uuid
+  reporterName    String          @map("reporter_name")
+  reporterPhone   String          @map("reporter_phone")
+  reporterEmail   String?         @map("reporter_email")
+  issueType       String          @map("issue_type")
+  description     String
+  latitude        Float?
+  longitude       Float?
+  address         String?
+  photoUrls       String[]        @default([]) @map("photo_urls")
+  status          GrievanceStatus @default(SUBMITTED)
+  trackingCode    String          @unique @map("tracking_code")
+  assignedTo      String?         @map("assigned_to") @db.Uuid
+  resolvedAt      DateTime?       @map("resolved_at")
+  resolutionNotes String?         @map("resolution_notes")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  manhole Manhole? @relation(fields: [manholeId], references: [id])
+
+  @@index([status])
+  @@index([trackingCode])
+  @@index([createdAt])
+  @@map("grievances")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid()) @db.Uuid
+  userId     String?     @map("user_id") @db.Uuid
+  action     AuditAction
+  entityType String      @map("entity_type")
+  entityId   String?     @map("entity_id")
+  oldValue   Json?       @map("old_value")
+  newValue   Json?       @map("new_value")
+  ipAddress  String?     @map("ip_address")
+  userAgent  String?     @map("user_agent")
+  hashChain  String?     @map("hash_chain")
+  timestamp  DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
+model SyncQueue {
+  id           String    @id @default(uuid()) @db.Uuid
+  deviceId     String    @map("device_id")
+  action       String
+  payload      Json
+  createdAt    DateTime  @default(now()) @map("created_at")
+  syncedAt     DateTime? @map("synced_at")
+  syncStatus   String    @default("pending") @map("sync_status")
+  conflictData Json?     @map("conflict_data")
+
+  @@index([deviceId])
+  @@index([syncStatus])
+  @@map("sync_queue")
+}
+
+model SOSRecord {
+  id                 String    @id @default(uuid()) @db.Uuid
+  entryLogId         String?   @map("entry_log_id") @db.Uuid
+  workerId           String    @map("worker_id") @db.Uuid
+  latitude           Float?
+  longitude          Float?
+  triggerMethod      String    @map("trigger_method")
+  nearestHospital    String?   @map("nearest_hospital")
+  hospitalDistance   Float?    @map("hospital_distance")
+  nearestFireStation String?   @map("nearest_fire_station")
+  respondedAt        DateTime? @map("responded_at")
+  resolvedAt         DateTime? @map("resolved_at")
+  outcome            String?
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  @@index([workerId])
+  @@index([createdAt])
+  @@map("sos_records")
+}

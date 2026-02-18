@@ -1,0 +1,114 @@
+{
+  "common": {
+    "appName": "ManholeGuard",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "download": "Download",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "loginFailed": "Login failed. Please check your credentials."
+  },
+  "risk": {
+    "safe": "Safe",
+    "caution": "Caution",
+    "prohibited": "Prohibited",
+    "score": "Risk Score",
+    "prediction": "Risk Prediction"
+  },
+  "entry": {
+    "scanQR": "Scan QR Code",
+    "startEntry": "Start Entry",
+    "confirmExit": "Confirm Exit",
+    "activeSession": "Active Session",
+    "timeRemaining": "Time Remaining",
+    "timeElapsed": "Time Elapsed",
+    "entryConfirmed": "Entry confirmed. You have {{minutes}} minutes. Stay safe.",
+    "warningTime": "Warning. You have {{minutes}} minutes remaining.",
+    "overstay": "Your time has exceeded. Please exit immediately.",
+    "exitConfirmed": "Exit confirmed. Thank you for your safety."
+  },
+  "checklist": {
+    "title": "Pre-Entry Safety Checklist",
+    "allRequired": "All mandatory items must be checked",
+    "requestOverride": "Request Supervisor Override",
+    "overrideApproved": "Supervisor override approved"
+  },
+  "checkin": {
+    "prompt": "Please confirm you are safe",
+    "respond": "I'm OK",
+    "missed": "Check-in missed",
+    "tapToConfirm": "Tap to confirm",
+    "shakeToConfirm": "Shake phone to confirm"
+  },
+  "gas": {
+    "safe": "Gas levels safe",
+    "warning": "Gas warning detected",
+    "danger": "DANGER! Toxic gas detected. Evacuate now!",
+    "evacuate": "EVACUATE IMMEDIATELY"
+  },
+  "sos": {
+    "trigger": "SOS Emergency",
+    "holdToActivate": "Hold for 3 seconds to activate SOS",
+    "activated": "Emergency alert activated. Help is on the way.",
+    "nearestHospital": "Nearest Hospital",
+    "nearestFireStation": "Nearest Fire Station"
+  },
+  "health": {
+    "title": "Post-Exit Health Check",
+    "feelingOk": "Are you feeling OK?",
+    "selectSymptoms": "Select any symptoms you are experiencing",
+    "medicalAlertSent": "Medical alert has been sent to your supervisor"
+  },
+  "shift": {
+    "start": "Start Shift",
+    "end": "End Shift",
+    "fatigueWarning": "Fatigue warning: You are approaching your shift limits",
+    "maxEntriesReached": "Maximum entries per shift reached",
+    "restRequired": "Rest required before next entry"
+  },
+  "alerts": {
+    "overstayAlert": "Overstay Alert",
+    "gasAlert": "Gas Alert",
+    "sosAlert": "SOS Emergency",
+    "weatherAlert": "Weather Alert",
+    "missedCheckin": "Missed Check-in"
+  },
+  "grievance": {
+    "reportIssue": "Report an Issue",
+    "trackStatus": "Track Status",
+    "trackingCode": "Tracking Code",
+    "submitted": "Your report has been submitted",
+    "issueTypes": {
+      "open_manhole": "Open/Uncovered Manhole",
+      "overflow": "Sewage Overflow",
+      "foul_smell": "Foul Smell",
+      "blockage": "Blockage",
+      "structural_damage": "Structural Damage"
+    }
+  },
+  "offline": {
+    "indicator": "You are offline",
+    "syncPending": "{{count}} actions pending sync",
+    "syncing": "Syncing...",
+    "syncComplete": "All data synced"
+  }
+}
