@@ -1,9 +1,9 @@
 {
   "projects": {
-    "default": "manholeguard"
+    "default": "manholeguard-9626"
   },
   "targets": {
-    "manholeguard": {
+    "manholeguard-9626": {
       "hosting": {
         "dashboard": ["manholeguard-dashboard"],
         "worker-app": ["manholeguard-worker"],

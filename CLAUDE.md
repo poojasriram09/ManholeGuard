@@ -29,18 +29,12 @@ Fully implemented Turborepo monorepo. All free-tier deployment: Firebase Auth (S
 # Install dependencies
 npm install
 
-# Start PostgreSQL for local dev
-docker-compose up -d postgres
+# Database (Supabase — no local Docker needed)
+cd apps/api && npx prisma migrate dev
+cd apps/api && npx prisma db seed
 
-# Database (from repo root or apps/api/)
-npx prisma migrate dev --name init
-npx prisma db seed
-
-# Dev servers (each in its own terminal or via turbo)
-npm run dev                              # all apps via turbo (api:4000, dashboard:3000, worker-app:3001, citizen-portal:3002)
-
-# Firebase emulators (Auth emulator for local testing)
-npm run emulators
+# Dev servers (all apps via turbo)
+npm run dev    # api:4000, dashboard:3000, worker-app:3001, citizen-portal:3002
 
 # Deploy frontends to Firebase Hosting (free Spark plan)
 npm run deploy:hosting
@@ -110,12 +104,12 @@ IDLE → SCANNED → CHECKLIST_PENDING → ENTERED → ACTIVE → EXITED
 
 ## Implementation Progress
 
-All phases complete. Firebase migration done.
+All phases complete. Firebase migration done. Database live on Supabase with seed data.
 
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | Prisma schema + migrations + seed data | Done |
-| 2 | Auth + user management | Done (Firebase Auth) |
+| 1 | Prisma schema + migrations + seed data | Done — 27 tables on Supabase |
+| 2 | Auth + user management | Done (Firebase Auth) — Service Account Key configured, login flow fixed |
 | 3 | Core entry flow (QR scan → geo-fence → checklist → risk → state machine) | Done |
 | 4 | Timer monitor + dead man's switch + alerts | Done (cron-job.org + HTTP endpoints) |
 | 5 | Dashboard (live entries, heatmap, analytics) | Done |
@@ -123,7 +117,32 @@ All phases complete. Firebase migration done.
 | 7 | Extended features (gas sensors, fatigue, SOS, certifications, maintenance) | Done |
 | 8 | Citizen portal + grievances | Done |
 | 9 | Compliance reports + audit trail | Done |
-| 10 | Deployment | Done (Firebase Hosting + Render + cron-job.org) |
+| 10 | Deployment config | Done (Firebase Hosting + Render + cron-job.org) |
+
+### Configuration Status
+
+| Config | Status |
+|--------|--------|
+| Firebase project (manholeguard-9626) | Connected |
+| Firebase Auth (Email/Password + Google) | Enabled in console |
+| Firebase client SDK (dashboard + worker-app) | Configured with real keys |
+| Firebase Service Account Key (API backend) | Configured in `apps/api/.env` |
+| Supabase PostgreSQL | Connected (tmjvdnmcmxpwiyzvgfzy) |
+| Prisma migration | Applied — 27 tables created |
+| Database seed data | Applied — 1 admin, 3 supervisors, 12 workers, 40 manholes, 60 entries, etc. |
+| Render deployment | Configured (render.yaml) — not yet deployed |
+| cron-job.org | Configured (cron.routes.ts) — not yet set up |
+
+### What's Needed to Complete
+
+1. **Verify login flow** — test dashboard login at http://localhost:3000 with `admin@manholeguard.in` / `password123` (user must exist in both Firebase Auth and Prisma seed data).
+2. **Supabase Service Role Key** — optional, needed for Realtime features. Get from Supabase dashboard → Settings → API.
+3. **Deploy to Render** — push to GitHub, connect repo in Render dashboard, set env vars.
+4. **Deploy to Firebase Hosting** — `npm run deploy:hosting` after building frontends.
+5. **Set up cron-job.org** — create 5 jobs pointing to Render API URL with `x-cron-secret` header.
+
+### Bug Fixes Applied
+- **Login redirect race condition** (dashboard): `LoginPage` was calling `navigate('/')` immediately after `signInWithEmailAndPassword`, before `onAuthStateChanged` → `/auth/sync` had completed. Fixed by using `useEffect` on `user` state to redirect only after sync finishes.
 
 ### Deployment Architecture (all free tier)
 - **Firebase Auth** (Spark plan, free): Email/Password + Google sign-in. `firebaseUid` field on User model. Auth middleware verifies Firebase ID tokens and maps to Prisma UUIDs — zero changes to 30+ services.
@@ -131,8 +150,6 @@ All phases complete. Firebase migration done.
 - **Render** (free tier): Express API server. Auto-deploys on git push via `render.yaml`.
 - **Supabase** (free tier): PostgreSQL database.
 - **cron-job.org** (free): Calls `/api/cron/*` endpoints with `x-cron-secret` header for scheduled tasks (timer monitor every 1 min, risk recalc every 6h, maintenance daily, weather every 2h, cert expiry daily).
-- **Removed**: BullMQ, ioredis, node-cron, jsonwebtoken, bcryptjs, firebase-functions.
-- **Migration script**: `scripts/migrate-users-to-firebase.ts` imports existing bcrypt-hashed passwords via `importUsers()`.
 
 ### Cron Job Setup (cron-job.org)
 | Endpoint | Schedule | Purpose |
@@ -146,11 +163,10 @@ All phases complete. Firebase migration done.
 All endpoints require header: `x-cron-secret: <CRON_SECRET>`
 
 ### Local Development Setup
-1. `firebase login` (one-time, requires browser)
-2. `docker-compose up -d postgres` (local PostgreSQL)
-3. `npm run dev` (all apps via turbo — API on :4000 with timer monitor auto-running)
-4. `npm run emulators` (Firebase Auth emulator on :9099)
-5. Frontends auto-connect to Auth emulator when `VITE_FIREBASE_EMULATOR=true`
+1. `npm install`
+2. `npm run dev` (starts all 4 apps — API connects to Supabase, no local Docker needed)
+3. Dashboard: http://localhost:3000 | Worker App: http://localhost:3001 | Citizen Portal: http://localhost:3002
+4. API health check: http://localhost:4000/health
 
 ## Key Design Principles
 

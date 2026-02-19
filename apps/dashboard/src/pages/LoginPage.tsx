@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
@@ -12,11 +12,12 @@ export default function LoginPage() {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
 
-  // Redirect if already logged in
-  if (user) {
-    navigate('/');
-    return null;
-  }
+  // Redirect when user is set (after onAuthStateChanged + sync completes)
+  useEffect(() => {
+    if (user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +25,7 @@ export default function LoginPage() {
     setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged in authStore handles the rest (sync + set user)
-      navigate('/');
+      // onAuthStateChanged in authStore handles sync + set user, then useEffect redirects
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {
@@ -38,7 +38,7 @@ export default function LoginPage() {
     setError('');
     try {
       await signInWithPopup(auth, googleProvider);
-      navigate('/');
+      // onAuthStateChanged in authStore handles sync + set user, then useEffect redirects
     } catch (err: any) {
       setError(err.message || 'Google sign-in failed');
     } finally {
