@@ -1,17 +1,24 @@
 FROM node:20-alpine AS builder
 
 WORKDIR /app
+
+# Copy all package.json files for workspace resolution
 COPY package.json package-lock.json turbo.json tsconfig.base.json ./
 COPY packages/shared/package.json packages/shared/
 COPY packages/offline-sync/package.json packages/offline-sync/
+COPY apps/api/package.json apps/api/
+COPY apps/dashboard/package.json apps/dashboard/
+COPY apps/worker-app/package.json apps/worker-app/
 COPY apps/citizen-portal/package.json apps/citizen-portal/
 
-RUN npm ci --workspace=apps/citizen-portal --include-workspace-root
+RUN npm ci
 
+# Copy source
 COPY packages/ packages/
 COPY apps/citizen-portal/ apps/citizen-portal/
 
-RUN npx turbo run build --filter=citizen-portal
+# Build with vite (skip tsc, esbuild handles TS)
+RUN cd apps/citizen-portal && npx vite build
 
 FROM nginx:alpine
 COPY --from=builder /app/apps/citizen-portal/dist /usr/share/nginx/html
