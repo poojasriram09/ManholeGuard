@@ -11,6 +11,12 @@ import AlertsPage from './pages/AlertsPage';
 import IncidentsPage from './pages/IncidentsPage';
 import TasksPage from './pages/TasksPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import ComplianceReportsPage from './pages/ComplianceReportsPage';
+import MaintenancePage from './pages/MaintenancePage';
+import CertificationsPage from './pages/CertificationsPage';
+import GrievancesPage from './pages/GrievancesPage';
+import AuditLogPage from './pages/AuditLogPage';
+import SettingsPage from './pages/SettingsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
@@ -32,6 +38,12 @@ export default function App() {
         <Route path="incidents" element={<IncidentsPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="reports" element={<ComplianceReportsPage />} />
+        <Route path="maintenance" element={<MaintenancePage />} />
+        <Route path="certifications" element={<CertificationsPage />} />
+        <Route path="grievances" element={<GrievancesPage />} />
+        <Route path="audit" element={<AuditLogPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>
   );

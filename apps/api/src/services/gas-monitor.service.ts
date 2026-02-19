@@ -70,10 +70,11 @@ export class GasMonitorService {
     });
 
     if (!latest) return true; // No sensor data
-    if (latest.isDangerous) return false;
 
     const ageHours = (Date.now() - latest.readAt.getTime()) / 3600000;
-    if (ageHours > 2) return true; // Stale data
+    if (ageHours > 2) return true; // Stale data — require fresh reading
+
+    if (latest.isDangerous) return false;
 
     return !this.evaluateDanger(latest);
   }

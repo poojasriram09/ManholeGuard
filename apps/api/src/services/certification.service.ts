@@ -65,4 +65,67 @@ export class CertificationService {
   async delete(id: string) {
     return prisma.workerCertification.delete({ where: { id } });
   }
+
+  /** Renew a certification by creating a new one and invalidating the old */
+  async renew(oldCertId: string, data: {
+    certificateNumber?: string;
+    issuedAt: string;
+    expiresAt: string;
+    issuedBy?: string;
+    documentUrl?: string;
+  }) {
+    const oldCert = await prisma.workerCertification.findUnique({ where: { id: oldCertId } });
+    if (!oldCert) throw new Error('Certification not found');
+
+    // Invalidate old cert
+    await prisma.workerCertification.update({
+      where: { id: oldCertId },
+      data: { isValid: false },
+    });
+
+    // Create new cert
+    const newCert = await prisma.workerCertification.create({
+      data: {
+        workerId: oldCert.workerId,
+        type: oldCert.type,
+        certificateNumber: data.certificateNumber || oldCert.certificateNumber,
+        issuedAt: new Date(data.issuedAt),
+        expiresAt: new Date(data.expiresAt),
+        issuedBy: data.issuedBy || oldCert.issuedBy,
+        documentUrl: data.documentUrl || oldCert.documentUrl,
+      },
+    });
+
+    logger.info(`Certification renewed: worker=${oldCert.workerId} type=${oldCert.type}`);
+    return newCert;
+  }
+
+  /** Bulk check: find all workers with expired mandatory certifications */
+  async bulkExpiryCheck() {
+    const workers = await prisma.worker.findMany({
+      include: {
+        certifications: {
+          where: { isValid: true },
+        },
+      },
+    });
+
+    const noncompliant = [];
+    for (const worker of workers) {
+      const missingCerts = REQUIRED_CERTIFICATIONS.filter(
+        (req) => !worker.certifications.some((c: any) => c.type === req && c.expiresAt > new Date())
+      );
+
+      if (missingCerts.length > 0) {
+        noncompliant.push({
+          workerId: worker.id,
+          workerName: worker.name,
+          employeeId: worker.employeeId,
+          missingCerts,
+        });
+      }
+    }
+
+    return noncompliant;
+  }
 }

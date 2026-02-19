@@ -1,0 +1,21 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package.json package-lock.json turbo.json tsconfig.base.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/offline-sync/package.json packages/offline-sync/
+COPY apps/citizen-portal/package.json apps/citizen-portal/
+
+RUN npm ci --workspace=apps/citizen-portal --include-workspace-root
+
+COPY packages/ packages/
+COPY apps/citizen-portal/ apps/citizen-portal/
+
+RUN npx turbo run build --filter=citizen-portal
+
+FROM nginx:alpine
+COPY --from=builder /app/apps/citizen-portal/dist /usr/share/nginx/html
+COPY apps/citizen-portal/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 3002
+CMD ["nginx", "-g", "daemon off;"]
