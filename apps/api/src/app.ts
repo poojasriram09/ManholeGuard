@@ -29,6 +29,7 @@ import analyticsRoutes from './routes/analytics.routes';
 import auditRoutes from './routes/audit.routes';
 import syncRoutes from './routes/sync.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import cronRoutes from './routes/cron.routes';
 
 const app = express();
 
@@ -43,6 +44,8 @@ app.use(cors({
     // Firebase Hosting domains
     /\.web\.app$/,
     /\.firebaseapp\.com$/,
+    // Render domain
+    /\.onrender\.com$/,
   ],
   credentials: true,
 }));
@@ -80,6 +83,9 @@ app.use('/api/dashboard', dashboardRoutes);
 
 // Public routes (no auth)
 app.use('/api/public', grievanceRoutes);
+
+// Cron endpoints (secured via x-cron-secret header, called by cron-job.org)
+app.use('/api/cron', cronRoutes);
 
 // 404 handler
 app.use((_req, res) => {

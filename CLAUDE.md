@@ -8,20 +8,20 @@ ManholeGuard is a predictive, QR-based digital safety system protecting sanitati
 
 ## Repository State
 
-Fully implemented Turborepo monorepo, deployed via Firebase (Auth + Hosting + Functions). PostgreSQL remains on Supabase.
+Fully implemented Turborepo monorepo. All free-tier deployment: Firebase Auth (Spark) + Firebase Hosting (Spark) + Render (free) + Supabase PostgreSQL (free) + cron-job.org (free).
 
 ## Tech Stack
 
 - **Monorepo**: Turborepo with npm
-- **Backend** (`apps/api/`): Express.js 4.x + TypeScript (strict) + Prisma 5.x + PostgreSQL 15 (Supabase) + Firebase Functions + Zod validation
+- **Backend** (`apps/api/`): Express.js 4.x + TypeScript (strict) + Prisma 5.x + PostgreSQL 15 (Supabase) + Zod validation, hosted on Render (free)
 - **Auth**: Firebase Authentication (Email/Password + Google sign-in) — backend verifies Firebase ID tokens, maps to Prisma UUIDs
 - **Dashboard** (`apps/dashboard/`): React 18 + Vite + TypeScript + Tailwind + Zustand + TanStack Query + Recharts + Leaflet
 - **Worker App** (`apps/worker-app/`): React PWA + html5-qrcode + Dexie.js (IndexedDB) + Service Worker + Web Push
 - **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth)
 - **Shared** (`packages/shared/`): TypeScript types, constants, i18n translations (6 languages)
 - **Offline Sync** (`packages/offline-sync/`): Shared offline sync logic
-- **Hosting**: Firebase Hosting (3 targets: dashboard, worker-app, citizen-portal)
-- **Scheduled Jobs**: Firebase Cloud Scheduler (replaces BullMQ/Redis)
+- **Hosting**: Firebase Hosting Spark plan (3 targets: dashboard, worker-app, citizen-portal)
+- **Scheduled Jobs**: cron-job.org (free) hitting `/api/cron/*` endpoints secured with `CRON_SECRET`
 
 ## Build & Development Commands
 
@@ -42,10 +42,10 @@ npm run dev                              # all apps via turbo (api:4000, dashboa
 # Firebase emulators (Auth emulator for local testing)
 npm run emulators
 
-# Deploy
-npm run deploy                           # build all + deploy everything
-npm run deploy:functions                 # deploy API only
-npm run deploy:hosting                   # deploy frontends only
+# Deploy frontends to Firebase Hosting (free Spark plan)
+npm run deploy:hosting
+
+# API deploys automatically via Render on git push (see render.yaml)
 
 # Run tests (Vitest)
 npx vitest                               # all tests
@@ -65,7 +65,7 @@ npx tsx scripts/migrate-users-to-firebase.ts
 - **Controllers** (`apps/api/src/controllers/`): Request/response handling, delegates to services
 - **Services** (`apps/api/src/services/`): All domain logic — risk engine, alerts, check-ins, fatigue, gas monitoring, etc.
 - **Middleware** (`apps/api/src/middleware/`): auth (Firebase ID token verification), errorHandler, rateLimiter, auditLog, geoFence
-- **Scheduled Functions** (`apps/api/src/index.ts`): Firebase Cloud Scheduler functions (timer monitor, risk recalc, maintenance, weather, certifications)
+- **Cron Routes** (`apps/api/src/routes/cron.routes.ts`): HTTP endpoints for scheduled tasks, secured with `x-cron-secret` header, triggered by cron-job.org
 - **Validators** (`apps/api/src/validators/`): Zod schemas for all API inputs
 
 ### Core Domain Logic
@@ -117,27 +117,39 @@ All phases complete. Firebase migration done.
 | 1 | Prisma schema + migrations + seed data | Done |
 | 2 | Auth + user management | Done (Firebase Auth) |
 | 3 | Core entry flow (QR scan → geo-fence → checklist → risk → state machine) | Done |
-| 4 | Timer monitor + dead man's switch + alerts | Done (Firebase Scheduled Function) |
+| 4 | Timer monitor + dead man's switch + alerts | Done (cron-job.org + HTTP endpoints) |
 | 5 | Dashboard (live entries, heatmap, analytics) | Done |
 | 6 | Worker PWA (offline, QR scanner, check-in UI) | Done |
 | 7 | Extended features (gas sensors, fatigue, SOS, certifications, maintenance) | Done |
 | 8 | Citizen portal + grievances | Done |
 | 9 | Compliance reports + audit trail | Done |
-| 10 | Deployment | Done (Firebase Hosting + Functions) |
+| 10 | Deployment | Done (Firebase Hosting + Render + cron-job.org) |
 
-### Firebase Migration (completed)
-- **Auth**: JWT/bcrypt replaced with Firebase Auth (Email/Password + Google sign-in). `firebaseUid` field on User model. Auth middleware verifies Firebase ID tokens and maps to Prisma UUIDs — zero changes to 30+ services.
-- **Functions**: Express API exported as `onRequest` Cloud Function with `minInstances: 1`. Five scheduled functions replace BullMQ/Redis (timer monitor, risk recalc, maintenance, weather alerts, cert expiry).
-- **Hosting**: 3 Firebase Hosting targets (dashboard, worker-app, citizen-portal) with SPA rewrites.
-- **Removed**: BullMQ, ioredis, node-cron, jsonwebtoken, bcryptjs (runtime). Jobs directory deleted.
-- **Kept**: PostgreSQL on Supabase, Prisma ORM, all services/controllers unchanged.
+### Deployment Architecture (all free tier)
+- **Firebase Auth** (Spark plan, free): Email/Password + Google sign-in. `firebaseUid` field on User model. Auth middleware verifies Firebase ID tokens and maps to Prisma UUIDs — zero changes to 30+ services.
+- **Firebase Hosting** (Spark plan, free): 3 targets (dashboard, worker-app, citizen-portal) with SPA rewrites.
+- **Render** (free tier): Express API server. Auto-deploys on git push via `render.yaml`.
+- **Supabase** (free tier): PostgreSQL database.
+- **cron-job.org** (free): Calls `/api/cron/*` endpoints with `x-cron-secret` header for scheduled tasks (timer monitor every 1 min, risk recalc every 6h, maintenance daily, weather every 2h, cert expiry daily).
+- **Removed**: BullMQ, ioredis, node-cron, jsonwebtoken, bcryptjs, firebase-functions.
 - **Migration script**: `scripts/migrate-users-to-firebase.ts` imports existing bcrypt-hashed passwords via `importUsers()`.
+
+### Cron Job Setup (cron-job.org)
+| Endpoint | Schedule | Purpose |
+|----------|----------|---------|
+| `POST /api/cron/timer-monitor` | Every 1 min | Dead man's switch, overstay alerts, gas alerts |
+| `POST /api/cron/risk-recalculation` | Every 6 hours | Recalculate risk scores for all manholes |
+| `POST /api/cron/maintenance` | Daily midnight | Check overdue maintenance, auto-schedule |
+| `POST /api/cron/weather-alert` | Every 2 hours | Weather safety checks for active entries |
+| `POST /api/cron/certification-expiry` | Daily 6 AM | Check expiring worker certifications |
+
+All endpoints require header: `x-cron-secret: <CRON_SECRET>`
 
 ### Local Development Setup
 1. `firebase login` (one-time, requires browser)
 2. `docker-compose up -d postgres` (local PostgreSQL)
-3. `npm run dev` (all apps via turbo)
-4. `npm run emulators` (Firebase Auth/Functions/Hosting emulators)
+3. `npm run dev` (all apps via turbo — API on :4000 with timer monitor auto-running)
+4. `npm run emulators` (Firebase Auth emulator on :9099)
 5. Frontends auto-connect to Auth emulator when `VITE_FIREBASE_EMULATOR=true`
 
 ## Key Design Principles

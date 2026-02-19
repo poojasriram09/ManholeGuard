@@ -13,7 +13,7 @@ export function auditLog(action: string, entityType: string) {
           select: { hashChain: true },
         });
 
-        lastLog.then((last: { hashChain: string } | null) => {
+        lastLog.then((last) => {
           const payload = {
             previousHash: last?.hashChain || 'GENESIS',
             action,

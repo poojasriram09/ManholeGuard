@@ -18,6 +18,9 @@ export const env = {
   // Firebase (FIREBASE_SERVICE_ACCOUNT_KEY is read directly by firebase-admin.ts)
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '',
 
+  // Cron secret (for securing /api/cron endpoints — set in cron-job.org as header)
+  CRON_SECRET: process.env.CRON_SECRET || 'dev-cron-secret',
+
   // External APIs
   OPENMETEO_BASE_URL: process.env.OPENMETEO_BASE_URL || 'https://api.open-meteo.com/v1/forecast',
 

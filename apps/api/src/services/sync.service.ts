@@ -27,7 +27,7 @@ export class SyncService {
         data: {
           deviceId,
           action: a.action,
-          payload: a.payload,
+          payload: a.payload as any,
           createdAt: new Date(a.createdAt),
         },
       });
@@ -124,7 +124,7 @@ export class SyncService {
       if (hasConflict) {
         results.push({ action: a.action, status: 'conflict' });
         await prisma.syncQueue.create({
-          data: { deviceId, action: a.action, payload: a.payload, createdAt: new Date(a.createdAt), syncStatus: 'conflict', conflictData: a.payload },
+          data: { deviceId, action: a.action, payload: a.payload as any, createdAt: new Date(a.createdAt), syncStatus: 'conflict', conflictData: a.payload as any },
         });
         continue;
       }
@@ -132,7 +132,7 @@ export class SyncService {
       try {
         await this.processAction(a.action, a.payload);
         await prisma.syncQueue.create({
-          data: { deviceId, action: a.action, payload: a.payload, createdAt: new Date(a.createdAt), syncStatus: 'synced', syncedAt: new Date() },
+          data: { deviceId, action: a.action, payload: a.payload as any, createdAt: new Date(a.createdAt), syncStatus: 'synced', syncedAt: new Date() },
         });
         results.push({ action: a.action, status: 'synced' });
       } catch (error: any) {
