@@ -31,39 +31,39 @@ export default function AlertHistory({ alerts }: AlertHistoryProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-3 bg-gray-50 rounded-lg p-3">
+      <div className="flex flex-wrap items-end gap-3 bg-surface-elevated rounded-lg p-3">
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+          <label className="block text-xs font-medium text-text-muted mb-1">Type</label>
           <select
             value={typeFilter}
             onChange={(e) => { setTypeFilter(e.target.value); handleFilterChange(); }}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+            className="input-dark"
           >
             {ALERT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">From</label>
+          <label className="block text-xs font-medium text-text-muted mb-1">From</label>
           <input
             type="date" value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); handleFilterChange(); }}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+            className="input-dark"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">To</label>
+          <label className="block text-xs font-medium text-text-muted mb-1">To</label>
           <input
             type="date" value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); handleFilterChange(); }}
-            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm"
+            className="input-dark"
           />
         </div>
-        <span className="text-xs text-gray-400 self-center">{filtered.length} results</span>
+        <span className="text-xs text-text-muted self-center">{filtered.length} results</span>
       </div>
 
       <div className="space-y-2">
         {paged.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-6">No alerts match filters</p>
+          <p className="text-sm text-text-muted text-center py-6">No alerts match filters</p>
         )}
         {paged.map((alert) => (
           <AlertCard key={alert.id} alert={alert} />
@@ -72,12 +72,12 @@ export default function AlertHistory({ alerts }: AlertHistoryProps) {
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-2">
-          <span className="text-sm text-gray-500">Page {page + 1} of {totalPages}</span>
+          <span className="text-sm text-text-secondary">Page {page + 1} of {totalPages}</span>
           <div className="space-x-2">
             <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}
-              className="px-3 py-1 rounded text-sm bg-white border disabled:opacity-50">Prev</button>
+              className="px-3 py-1 rounded text-sm bg-surface-elevated border border-border text-text-secondary disabled:opacity-50 hover:bg-surface-hover transition-colors">Prev</button>
             <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-              className="px-3 py-1 rounded text-sm bg-white border disabled:opacity-50">Next</button>
+              className="px-3 py-1 rounded text-sm bg-surface-elevated border border-border text-text-secondary disabled:opacity-50 hover:bg-surface-hover transition-colors">Next</button>
           </div>
         </div>
       )}

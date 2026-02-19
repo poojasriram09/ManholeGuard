@@ -19,7 +19,7 @@ function daysOverdue(scheduledAt: string): number {
 export default function OverdueMaintenanceList({ items }: OverdueMaintenanceListProps) {
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 text-center text-gray-400">
+      <div className="card-surface p-6 text-center text-text-muted">
         No overdue maintenance items.
       </div>
     );
@@ -30,30 +30,30 @@ export default function OverdueMaintenanceList({ items }: OverdueMaintenanceList
   );
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-4 py-3 border-b bg-red-50">
-        <h3 className="text-sm font-semibold text-red-800">
+    <div className="card-surface">
+      <div className="px-4 py-3 border-b border-border bg-danger-muted/30">
+        <h3 className="text-sm font-heading font-semibold text-danger">
           Overdue Maintenance ({items.length})
         </h3>
       </div>
-      <ul className="divide-y">
+      <ul className="divide-y divide-border">
         {sorted.map((item) => {
           const days = daysOverdue(item.scheduledAt);
           return (
-            <li key={item.id} className="px-4 py-3 flex items-center gap-3 hover:bg-red-50/50">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <span className="text-xs font-bold text-red-700">{days}d</span>
+            <li key={item.id} className="px-4 py-3 flex items-center gap-3 hover:bg-danger-muted/10 transition-colors">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-danger-muted flex items-center justify-center">
+                <span className="text-xs font-bold text-danger">{days}d</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">
+                <p className="text-sm font-medium text-text-primary truncate">
                   {item.type || 'Maintenance'} {item.manholeId ? `- ${item.manholeId}` : ''}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-text-secondary">
                   Scheduled: {new Date(item.scheduledAt).toLocaleDateString()}
                   {item.assignedTeam && ` | Team: ${item.assignedTeam}`}
                 </p>
               </div>
-              <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-medium text-danger bg-danger-muted px-2 py-0.5 rounded-full border border-danger/20">
                 OVERDUE
               </span>
             </li>

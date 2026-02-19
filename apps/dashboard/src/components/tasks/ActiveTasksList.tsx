@@ -27,52 +27,52 @@ const priorityVariant: Record<string, 'default' | 'info' | 'warning' | 'danger'>
 export default function ActiveTasksList({ tasks, onComplete }: ActiveTasksListProps) {
   if (tasks.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 text-center text-gray-400">
+      <div className="card-surface p-6 text-center text-text-muted">
         No active tasks.
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow divide-y">
+    <div className="card-surface divide-y divide-border">
       {tasks.map((task) => (
-        <div key={task.id} className="p-4 hover:bg-gray-50">
+        <div key={task.id} className="p-4 hover:bg-surface-hover transition-colors">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-medium text-gray-800 truncate">
+                <p className="text-sm font-medium text-text-primary truncate">
                   {task.taskType?.replace(/_/g, ' ') || 'Task'}: {task.description || task.id}
                 </p>
                 {task.priority && (
                   <Badge variant={priorityVariant[task.priority] || 'default'}>{task.priority}</Badge>
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-text-secondary mt-1">
                 {task.scheduledAt && `Scheduled: ${new Date(task.scheduledAt).toLocaleString()}`}
                 {task.manholeId && ` | Manhole: ${task.manholeId}`}
               </p>
               {task.assignedWorkers && task.assignedWorkers.length > 0 && (
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-text-muted mt-0.5">
                   Workers: {task.assignedWorkers.map((w) => w.name).join(', ')}
                 </p>
               )}
             </div>
             {onComplete && (
               <button onClick={() => onComplete(task.id)}
-                className="ml-3 px-3 py-1 bg-green-600 text-white rounded-lg text-xs font-medium hover:bg-green-700 transition-colors">
+                className="ml-3 px-3 py-1 bg-safe text-white rounded-lg text-xs font-medium hover:bg-safe/80 transition-colors">
                 Complete
               </button>
             )}
           </div>
           {typeof task.progress === 'number' && (
             <div className="mt-2">
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
+              <div className="w-full bg-surface-elevated rounded-full h-1.5">
                 <div
-                  className="bg-blue-600 h-1.5 rounded-full transition-all"
+                  className="bg-accent h-1.5 rounded-full transition-all animate-progress-fill"
                   style={{ width: `${Math.min(100, task.progress)}%` }}
                 />
               </div>
-              <p className="text-xs text-gray-400 mt-0.5 text-right">{task.progress}%</p>
+              <p className="text-xs text-text-muted mt-0.5 text-right">{task.progress}%</p>
             </div>
           )}
         </div>

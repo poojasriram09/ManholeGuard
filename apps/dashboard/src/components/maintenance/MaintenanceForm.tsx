@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface MaintenanceFormProps {
   onSubmit: (data: {
@@ -38,9 +38,9 @@ export default function MaintenanceForm({ onSubmit, manholes, maintenance, onCan
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Manhole</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Manhole</label>
         <select value={manholeId} onChange={(e) => setManholeId(e.target.value)} required
-          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="input-dark w-full">
           <option value="">Select manhole...</option>
           {manholes.map((m) => (
             <option key={m.id} value={m.id}>
@@ -50,38 +50,37 @@ export default function MaintenanceForm({ onSubmit, manholes, maintenance, onCan
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Type</label>
         <select value={type} onChange={(e) => setType(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="input-dark w-full">
           {maintenanceTypes.map((t) => (
             <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>
           ))}
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Scheduled At</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Scheduled At</label>
         <input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)}
-          required className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          required className="input-dark w-full" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Assigned Team</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Assigned Team</label>
         <input type="text" value={assignedTeam} onChange={(e) => setAssignedTeam(e.target.value)}
           placeholder="e.g. Team Alpha"
-          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          className="input-dark w-full" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Notes</label>
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3}
           placeholder="Additional notes..."
-          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          className="input-dark w-full" />
       </div>
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="flex justify-end gap-2 pt-2 border-t border-border">
         <button type="button" onClick={onCancel}
-          className="px-4 py-2 border rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+          className="px-4 py-2 text-sm text-text-muted hover:text-text-primary transition-colors">
           Cancel
         </button>
-        <button type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+        <button type="submit" className="btn-primary">
           {maintenance ? 'Update' : 'Schedule'}
         </button>
       </div>

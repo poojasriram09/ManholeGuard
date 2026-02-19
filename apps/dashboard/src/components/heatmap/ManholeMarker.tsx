@@ -14,13 +14,13 @@ interface ManholeMarkerProps {
 }
 
 const riskColors: Record<string, string> = {
-  SAFE: '#22c55e',
-  CAUTION: '#eab308',
-  PROHIBITED: '#ef4444',
+  SAFE: '#34d399',
+  CAUTION: '#fbbf24',
+  PROHIBITED: '#f43f5e',
 };
 
 export default function ManholeMarker({ manhole, onClick }: ManholeMarkerProps) {
-  const color = riskColors[manhole.riskLevel] || '#6b7280';
+  const color = riskColors[manhole.riskLevel] || '#64748b';
   const radius = Math.max(6, Math.min(20, manhole.riskScore / 5));
 
   return (

@@ -21,29 +21,29 @@ const thresholds: Record<string, { safe: number; danger: number; unit: string }>
 
 function getColor(gasType: string, value: number): string {
   const t = thresholds[gasType];
-  if (!t) return 'text-gray-700';
+  if (!t) return 'text-text-secondary';
   if (gasType === 'O2') {
-    return value >= t.safe ? 'text-green-600' : value >= t.danger ? 'text-yellow-600' : 'text-red-600';
+    return value >= t.safe ? 'text-safe' : value >= t.danger ? 'text-caution' : 'text-danger';
   }
-  return value <= t.safe ? 'text-green-600' : value <= t.danger ? 'text-yellow-600' : 'text-red-600';
+  return value <= t.safe ? 'text-safe' : value <= t.danger ? 'text-caution' : 'text-danger';
 }
 
 export default function GasReadingPanel({ readings, manholeId }: GasReadingPanelProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-4">
+    <div className="card-surface p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-gray-800">Gas Readings</h3>
-        {manholeId && <span className="text-xs text-gray-500">Manhole: {manholeId}</span>}
+        <h3 className="font-heading font-semibold text-text-primary">Gas Readings</h3>
+        {manholeId && <span className="text-xs text-text-muted font-mono">Manhole: {manholeId}</span>}
       </div>
       {readings.length === 0 ? (
-        <p className="text-sm text-gray-400">No gas readings available.</p>
+        <p className="text-sm text-text-muted">No gas readings available.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {readings.map((r) => (
-            <div key={r.gasType} className="border rounded-lg p-3 text-center">
-              <p className="text-xs text-gray-500 font-medium">{r.gasType}</p>
-              <p className={`text-xl font-bold ${getColor(r.gasType, r.value)}`}>{r.value}</p>
-              <p className="text-xs text-gray-400">{r.unit || thresholds[r.gasType]?.unit || ''}</p>
+            <div key={r.gasType} className="bg-surface-base border border-border rounded-lg p-3 text-center">
+              <p className="text-xs text-text-muted font-medium">{r.gasType}</p>
+              <p className={`text-xl font-heading font-bold ${getColor(r.gasType, r.value)}`}>{r.value}</p>
+              <p className="text-xs text-text-muted">{r.unit || thresholds[r.gasType]?.unit || ''}</p>
             </div>
           ))}
         </div>

@@ -40,45 +40,45 @@ export default function DataTable<T extends Record<string, any>>({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="card-surface overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-surface-elevated">
             <tr>
               {columns.map((col) => (
                 <th key={col.key} onClick={() => col.sortable && toggleSort(col.key)}
-                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:text-gray-700 select-none' : ''}`}>
+                  className={`px-6 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider ${col.sortable ? 'cursor-pointer hover:text-text-secondary select-none' : ''}`}>
                   {col.header}
                   {sortKey === col.key && <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border">
             {paged.map((item, i) => (
               <tr key={i} onClick={() => onRowClick?.(item)}
-                className={onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''}>
+                className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-accent-muted/30' : ''}`}>
                 {columns.map((col) => (
-                  <td key={col.key} className="px-6 py-4 text-sm">
+                  <td key={col.key} className="px-6 py-4 text-sm text-text-secondary">
                     {col.render ? col.render(item) : String(item[col.key] ?? '')}
                   </td>
                 ))}
               </tr>
             ))}
             {paged.length === 0 && (
-              <tr><td colSpan={columns.length} className="px-6 py-10 text-center text-gray-400">{emptyMessage}</td></tr>
+              <tr><td colSpan={columns.length} className="px-6 py-10 text-center text-text-muted">{emptyMessage}</td></tr>
             )}
           </tbody>
         </table>
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-6 py-3 border-t bg-gray-50">
-          <span className="text-sm text-gray-500">Page {page + 1} of {totalPages} ({sorted.length} items)</span>
+        <div className="flex items-center justify-between px-6 py-3 border-t border-border bg-surface-elevated">
+          <span className="text-sm text-text-muted">Page {page + 1} of {totalPages} ({sorted.length} items)</span>
           <div className="space-x-2">
             <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}
-              className="px-3 py-1 rounded text-sm bg-white border disabled:opacity-50">Prev</button>
+              className="px-3 py-1 rounded text-sm bg-surface-card border border-border text-text-secondary disabled:opacity-50 hover:bg-surface-hover transition-colors">Prev</button>
             <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-              className="px-3 py-1 rounded text-sm bg-white border disabled:opacity-50">Next</button>
+              className="px-3 py-1 rounded text-sm bg-surface-card border border-border text-text-secondary disabled:opacity-50 hover:bg-surface-hover transition-colors">Next</button>
           </div>
         </div>
       )}

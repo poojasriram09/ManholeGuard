@@ -15,9 +15,11 @@ export default function ActiveEntryCard({ entry, onClick }: ActiveEntryCardProps
   const ratio = minutes / allowed;
 
   const borderColor =
-    ratio >= 1 ? 'border-red-500' :
-    ratio >= 0.75 ? 'border-yellow-500' :
-    'border-gray-200';
+    ratio >= 1 ? 'border-danger' :
+    ratio >= 0.75 ? 'border-caution' :
+    'border-border';
+
+  const shadowClass = ratio >= 1 ? 'shadow-glow-danger' : '';
 
   const stateVariant =
     entry.state === 'OVERSTAY_ALERT' || entry.state === 'SOS_TRIGGERED' || entry.state === 'GAS_ALERT'
@@ -29,24 +31,24 @@ export default function ActiveEntryCard({ entry, onClick }: ActiveEntryCardProps
   return (
     <div
       onClick={onClick}
-      className={`rounded-lg border-2 ${borderColor} bg-white p-4 shadow-sm transition hover:shadow-md ${onClick ? 'cursor-pointer' : ''}`}
+      className={`card-surface border-2 ${borderColor} p-4 transition-all duration-200 hover:shadow-card-hover ${shadowClass} ${onClick ? 'cursor-pointer' : ''}`}
     >
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-gray-900 truncate">{entry.worker?.name ?? 'Unknown Worker'}</h3>
+        <h3 className="font-semibold text-text-primary truncate">{entry.worker?.name ?? 'Unknown Worker'}</h3>
         <Badge variant={stateVariant}>{entry.state}</Badge>
       </div>
-      <p className="text-sm text-gray-500 truncate">
+      <p className="text-sm text-text-muted truncate">
         {entry.manhole?.area ?? 'Unknown'} &mdash; {entry.manhole?.qrCodeId ?? ''}
       </p>
       <div className="mt-3 flex items-center justify-between">
-        <span className={`text-lg font-bold ${ratio >= 1 ? 'text-red-600' : ratio >= 0.75 ? 'text-yellow-600' : 'text-gray-800'}`}>
+        <span className={`text-lg font-heading font-bold ${ratio >= 1 ? 'text-danger' : ratio >= 0.75 ? 'text-caution' : 'text-text-primary'}`}>
           {minutes} min
         </span>
-        <span className="text-xs text-gray-400">/ {allowed} min allowed</span>
+        <span className="text-xs text-text-muted">/ {allowed} min allowed</span>
       </div>
-      <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5">
+      <div className="mt-2 w-full bg-surface-elevated rounded-full h-1.5 overflow-hidden">
         <div
-          className={`h-1.5 rounded-full ${ratio >= 1 ? 'bg-red-500' : ratio >= 0.75 ? 'bg-yellow-500' : 'bg-blue-500'}`}
+          className={`h-1.5 rounded-full animate-progress-fill ${ratio >= 1 ? 'bg-danger' : ratio >= 0.75 ? 'bg-caution' : 'bg-accent'}`}
           style={{ width: `${Math.min(ratio * 100, 100)}%` }}
         />
       </div>

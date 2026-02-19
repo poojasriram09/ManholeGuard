@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { api } from '../api/client';
 import StatCard from '../components/common/StatCard';
 
-const RISK_COLORS = ['#22c55e', '#f59e0b', '#ef4444'];
+const RISK_COLORS = ['#34d399', '#fbbf24', '#f43f5e'];
 
 export default function AnalyticsPage() {
   const { data, isLoading } = useQuery({
@@ -11,12 +11,12 @@ export default function AnalyticsPage() {
     queryFn: () => api.get<{ data: any }>('/analytics/overview'),
   });
 
-  if (isLoading) return <div className="text-center py-10">Loading analytics...</div>;
+  if (isLoading) return <div className="text-center py-10 text-text-muted">Loading analytics...</div>;
   const stats = data?.data;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Analytics</h1>
+      <h1 className="font-heading text-2xl font-bold text-text-primary mb-6">Analytics</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <StatCard title="Total Entries" value={stats?.totalEntries ?? 0} color="blue" />
@@ -26,8 +26,8 @@ export default function AnalyticsPage() {
       </div>
 
       {stats?.riskDistribution && (
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-lg font-semibold mb-4">Risk Distribution</h2>
+        <div className="card-surface p-6 mb-8">
+          <h2 className="text-lg font-heading font-semibold text-text-primary mb-4">Risk Distribution</h2>
           <div style={{ height: 300 }}>
             <ResponsiveContainer>
               <PieChart>
@@ -36,7 +36,9 @@ export default function AnalyticsPage() {
                     <Cell key={i} fill={RISK_COLORS[i % RISK_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'var(--chart-tooltip-bg)', border: '1px solid var(--chart-tooltip-border)', borderRadius: '0.5rem', color: 'var(--text-primary)' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

@@ -23,7 +23,19 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const loading = useAuthStore((s) => s.loading);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-base">
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative w-10 h-10">
+            <svg className="animate-spin-slow" width={40} height={40} viewBox="0 0 50 50" fill="none">
+              <circle cx="25" cy="25" r="20" stroke="var(--border-default)" strokeWidth="4" />
+              <circle cx="25" cy="25" r="20" stroke="var(--accent)" strokeWidth="4" strokeLinecap="round" strokeDasharray="80 50" />
+            </svg>
+          </div>
+          <p className="text-text-muted text-sm">Loading...</p>
+        </div>
+      </div>
+    );
   }
   if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;

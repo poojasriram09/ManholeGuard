@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { api } from '../api/client';
 
-const RISK_COLORS = { SAFE: '#22c55e', CAUTION: '#f59e0b', PROHIBITED: '#ef4444' };
+const RISK_COLORS = { SAFE: '#34d399', CAUTION: '#fbbf24', PROHIBITED: '#f43f5e' };
 const CENTER: [number, number] = [19.076, 72.8777]; // Mumbai
 
 export default function HeatmapPage() {
@@ -15,12 +15,12 @@ export default function HeatmapPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Risk Heatmap</h1>
-      <div className="bg-white rounded-lg shadow overflow-hidden" style={{ height: '70vh' }}>
+      <h1 className="font-heading text-2xl font-bold text-text-primary mb-6">Risk Heatmap</h1>
+      <div className="card-surface overflow-hidden" style={{ height: '70vh' }}>
         <MapContainer center={CENTER} zoom={12} style={{ height: '100%', width: '100%' }}>
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
           {points.map((p: any) => (
             <CircleMarker

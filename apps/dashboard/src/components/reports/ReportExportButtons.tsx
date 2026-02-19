@@ -15,7 +15,7 @@ export default function ReportExportButtons({ onExport }: ReportExportButtonsPro
         <button
           key={f.value}
           onClick={() => onExport(f.value)}
-          className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-elevated border border-border rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={f.icon} />

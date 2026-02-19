@@ -35,11 +35,11 @@ export default function GrievanceQueue({ grievances, onSelect }: GrievanceQueueP
   );
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-4 py-3 border-b flex items-center justify-between">
-        <h3 className="font-semibold text-gray-800">Grievances ({filtered.length})</h3>
+    <div className="card-surface">
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+        <h3 className="font-heading font-semibold text-text-primary">Grievances ({filtered.length})</h3>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          className="border rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="input-dark">
           <option value="ALL">All Statuses</option>
           <option value="OPEN">Open</option>
           <option value="IN_PROGRESS">In Progress</option>
@@ -48,15 +48,15 @@ export default function GrievanceQueue({ grievances, onSelect }: GrievanceQueueP
         </select>
       </div>
       {sorted.length === 0 ? (
-        <div className="p-6 text-center text-gray-400">No grievances found.</div>
+        <div className="p-6 text-center text-text-muted">No grievances found.</div>
       ) : (
-        <ul className="divide-y">
+        <ul className="divide-y divide-border">
           {sorted.map((g) => (
             <li key={g.id} onClick={() => onSelect(g.id)}
-              className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3">
+              className="px-4 py-3 hover:bg-surface-hover cursor-pointer flex items-center gap-3 transition-colors">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{g.subject || g.id}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-sm font-medium text-text-primary truncate">{g.subject || g.id}</p>
+                <p className="text-xs text-text-muted">
                   {g.citizenName || 'Anonymous'} &middot; {new Date(g.createdAt).toLocaleDateString()}
                   {g.category && ` &middot; ${g.category}`}
                 </p>

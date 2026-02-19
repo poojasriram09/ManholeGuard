@@ -25,12 +25,12 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
 
   return (
     <div ref={overlayRef} onClick={(e) => e.target === overlayRef.current && onClose()}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className={`bg-white rounded-xl shadow-xl w-full ${sizes[size]} max-h-[90vh] flex flex-col`}>
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+      <div className={`card-surface w-full ${sizes[size]} max-h-[90vh] flex flex-col animate-scale-in`}>
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-heading font-semibold text-text-primary">{title}</h2>
+            <button onClick={onClose} className="text-text-muted hover:text-text-primary text-xl transition-colors">&times;</button>
           </div>
         )}
         <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>

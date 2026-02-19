@@ -27,14 +27,14 @@ export default function MaintenancePage() {
     return 'warning';
   };
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>;
+  if (isLoading) return <div className="text-center py-10 text-text-muted">Loading...</div>;
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Maintenance ({items.length})</h1>
+        <h1 className="font-heading text-2xl font-bold text-text-primary">Maintenance ({items.length})</h1>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border-gray-300 border px-3 py-2 text-sm">
+          className="input-dark">
           <option value="">All Statuses</option>
           {['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'OVERDUE', 'CANCELLED'].map((s) => (
             <option key={s} value={s}>{s}</option>
@@ -42,40 +42,40 @@ export default function MaintenancePage() {
         </select>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="card-surface overflow-hidden">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-surface-elevated">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Manhole</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Scheduled</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Manhole</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Scheduled</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Team</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border">
             {items.map((m: any) => (
-              <tr key={m.id} className={m.status === 'OVERDUE' ? 'bg-red-50' : ''}>
-                <td className="px-6 py-4 text-sm">{m.manhole?.area} — {m.manhole?.qrCodeId}</td>
-                <td className="px-6 py-4 text-sm capitalize">{m.type}</td>
-                <td className="px-6 py-4 text-sm">{new Date(m.scheduledAt).toLocaleDateString()}</td>
+              <tr key={m.id} className={m.status === 'OVERDUE' ? 'bg-danger-muted/30' : 'hover:bg-surface-hover transition-colors'}>
+                <td className="px-6 py-4 text-sm text-text-secondary">{m.manhole?.area} — {m.manhole?.qrCodeId}</td>
+                <td className="px-6 py-4 text-sm capitalize text-text-secondary">{m.type}</td>
+                <td className="px-6 py-4 text-sm text-text-secondary">{new Date(m.scheduledAt).toLocaleDateString()}</td>
                 <td className="px-6 py-4"><Badge variant={statusVariant(m.status)}>{m.status}</Badge></td>
-                <td className="px-6 py-4 text-sm">{m.assignedTeam || '—'}</td>
+                <td className="px-6 py-4 text-sm text-text-secondary">{m.assignedTeam || '—'}</td>
                 <td className="px-6 py-4 text-sm space-x-2">
                   {m.status === 'SCHEDULED' && (
                     <button onClick={() => updateMutation.mutate({ id: m.id, status: 'IN_PROGRESS' })}
-                      className="text-blue-600 hover:underline text-xs">Start</button>
+                      className="text-accent hover:underline text-xs">Start</button>
                   )}
                   {m.status === 'IN_PROGRESS' && (
                     <button onClick={() => updateMutation.mutate({ id: m.id, status: 'COMPLETED' })}
-                      className="text-green-600 hover:underline text-xs">Complete</button>
+                      className="text-safe hover:underline text-xs">Complete</button>
                   )}
                 </td>
               </tr>
             ))}
             {items.length === 0 && (
-              <tr><td colSpan={6} className="px-6 py-10 text-center text-gray-400">No maintenance records</td></tr>
+              <tr><td colSpan={6} className="px-6 py-10 text-center text-text-muted">No maintenance records</td></tr>
             )}
           </tbody>
         </table>

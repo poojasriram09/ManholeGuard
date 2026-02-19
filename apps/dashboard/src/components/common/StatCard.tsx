@@ -6,18 +6,20 @@ interface StatCardProps {
 }
 
 export default function StatCard({ title, value, subtitle, color = 'blue' }: StatCardProps) {
-  const colorClasses: Record<string, string> = {
-    blue: 'border-blue-500 bg-blue-50',
-    green: 'border-green-500 bg-green-50',
-    yellow: 'border-yellow-500 bg-yellow-50',
-    red: 'border-red-500 bg-red-50',
+  const colorConfig: Record<string, { border: string; glow: string; text: string }> = {
+    blue: { border: 'border-accent', glow: 'shadow-glow-accent', text: 'text-accent-strong' },
+    green: { border: 'border-safe', glow: 'shadow-glow-safe', text: 'text-safe' },
+    yellow: { border: 'border-caution', glow: 'shadow-glow-caution', text: 'text-caution' },
+    red: { border: 'border-danger', glow: 'shadow-glow-danger', text: 'text-danger' },
   };
 
+  const cfg = colorConfig[color] || colorConfig.blue;
+
   return (
-    <div className={`rounded-lg border-l-4 p-4 ${colorClasses[color] || colorClasses.blue}`}>
-      <p className="text-sm text-gray-600">{title}</p>
-      <p className="text-2xl font-bold mt-1">{value}</p>
-      {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
+    <div className={`card-surface border-l-4 ${cfg.border} p-4 transition-all duration-200 hover:${cfg.glow} hover:shadow-card-hover`}>
+      <p className="text-sm text-text-muted">{title}</p>
+      <p className={`font-heading text-3xl font-bold mt-1 ${cfg.text}`}>{value}</p>
+      {subtitle && <p className="text-xs text-text-muted mt-1">{subtitle}</p>}
     </div>
   );
 }

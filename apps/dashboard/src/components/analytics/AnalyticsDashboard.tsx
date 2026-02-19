@@ -19,7 +19,7 @@ export default function AnalyticsDashboard({ stats, from, to }: AnalyticsDashboa
   return (
     <div>
       {(from || to) && (
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-text-muted mb-4">
           Period: {from || '---'} to {to || '---'}
         </p>
       )}

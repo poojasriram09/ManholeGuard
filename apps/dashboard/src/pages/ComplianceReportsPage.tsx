@@ -33,30 +33,30 @@ export default function ComplianceReportsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Compliance Reports</h1>
+      <h1 className="font-heading text-2xl font-bold text-text-primary mb-6">Compliance Reports</h1>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="card-surface p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">Report Type</label>
             <select value={type} onChange={(e) => setType(e.target.value)}
-              className="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm">
+              className="input-dark w-full">
               {REPORT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">From</label>
             <input type="date" value={from} onChange={(e) => setFrom(e.target.value)}
-              className="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm" />
+              className="input-dark w-full" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">To</label>
             <input type="date" value={to} onChange={(e) => setTo(e.target.value)}
-              className="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm" />
+              className="input-dark w-full" />
           </div>
           <div className="flex items-end">
             <button onClick={handleGenerate} disabled={generateMutation.isPending}
-              className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 text-sm hover:bg-blue-700 disabled:opacity-50">
+              className="w-full btn-primary py-2.5">
               {generateMutation.isPending ? 'Generating...' : 'Generate Report'}
             </button>
           </div>
@@ -64,20 +64,20 @@ export default function ComplianceReportsPage() {
       </div>
 
       {report && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="card-surface p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">{REPORT_TYPES.find((t) => t.value === report.type)?.label}</h2>
+            <h2 className="text-lg font-heading font-semibold text-text-primary">{REPORT_TYPES.find((t) => t.value === report.type)?.label}</h2>
             <div className="space-x-2">
               <button onClick={() => navigator.clipboard.writeText(JSON.stringify(report, null, 2))}
-                className="px-3 py-1 rounded text-sm bg-gray-100 hover:bg-gray-200">Copy JSON</button>
+                className="px-3 py-1 rounded text-sm bg-surface-elevated text-text-secondary border border-border hover:bg-surface-hover transition-colors">Copy JSON</button>
             </div>
           </div>
           {report.summary && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {Object.entries(report.summary).map(([key, value]) => (
-                <div key={key} className="border rounded-lg p-3">
-                  <p className="text-xs text-gray-500">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                  <p className="text-lg font-semibold">{typeof value === 'number' ? Math.round(value as number * 10) / 10 : String(value)}</p>
+                <div key={key} className="bg-surface-base border border-border rounded-lg p-3">
+                  <p className="text-xs text-text-muted">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                  <p className="text-lg font-heading font-semibold text-text-primary">{typeof value === 'number' ? Math.round(value as number * 10) / 10 : String(value)}</p>
                 </div>
               ))}
             </div>

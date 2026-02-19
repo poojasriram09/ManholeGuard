@@ -42,18 +42,18 @@ export default function TaskRegistrationForm({ onSubmit, workers, manholes, onCa
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Task Type</label>
+          <label className="block text-sm font-medium text-text-secondary mb-1">Task Type</label>
           <select value={taskType} onChange={(e) => setTaskType(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className="input-dark w-full">
             {taskTypes.map((t) => (
               <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>
             ))}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+          <label className="block text-sm font-medium text-text-secondary mb-1">Priority</label>
           <select value={priority} onChange={(e) => setPriority(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className="input-dark w-full">
             {priorities.map((p) => (
               <option key={p} value={p}>{p}</option>
             ))}
@@ -61,15 +61,15 @@ export default function TaskRegistrationForm({ onSubmit, workers, manholes, onCa
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Description</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
           required placeholder="Describe the task..."
-          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          className="input-dark w-full" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Manhole</label>
+        <label className="block text-sm font-medium text-text-secondary mb-1">Manhole</label>
         <select value={manholeId} onChange={(e) => setManholeId(e.target.value)} required
-          className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          className="input-dark w-full">
           <option value="">Select manhole...</option>
           {manholes.map((m) => (
             <option key={m.id} value={m.id}>{m.qrCodeId || m.id} {m.area ? `(${m.area})` : ''}</option>
@@ -77,14 +77,14 @@ export default function TaskRegistrationForm({ onSubmit, workers, manholes, onCa
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-text-secondary mb-1">
           Assigned Workers ({selectedWorkers.length} selected)
         </label>
-        <div className="border rounded-lg p-2 max-h-36 overflow-y-auto space-y-1">
+        <div className="border border-border rounded-lg p-2 max-h-36 overflow-y-auto space-y-1 bg-surface-base">
           {workers.map((w) => (
-            <label key={w.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 px-2 py-1 rounded">
+            <label key={w.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-surface-hover px-2 py-1 rounded text-text-primary transition-colors">
               <input type="checkbox" checked={selectedWorkers.includes(w.id)}
-                onChange={() => toggleWorker(w.id)} className="rounded" />
+                onChange={() => toggleWorker(w.id)} className="rounded accent-accent" />
               {w.name}
             </label>
           ))}
@@ -92,24 +92,23 @@ export default function TaskRegistrationForm({ onSubmit, workers, manholes, onCa
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Scheduled At</label>
+          <label className="block text-sm font-medium text-text-secondary mb-1">Scheduled At</label>
           <input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)}
-            required className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            required className="input-dark w-full" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Allowed Duration (min)</label>
+          <label className="block text-sm font-medium text-text-secondary mb-1">Allowed Duration (min)</label>
           <input type="number" value={allowedDuration} onChange={(e) => setAllowedDuration(Number(e.target.value))}
             min={10} max={480}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="input-dark w-full" />
         </div>
       </div>
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="flex justify-end gap-2 pt-2 border-t border-border">
         <button type="button" onClick={onCancel}
-          className="px-4 py-2 border rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+          className="px-4 py-2 text-sm text-text-muted hover:text-text-primary transition-colors">
           Cancel
         </button>
-        <button type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+        <button type="submit" className="btn-primary">
           Create Task
         </button>
       </div>

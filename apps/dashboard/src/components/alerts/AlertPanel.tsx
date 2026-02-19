@@ -25,10 +25,10 @@ export default function AlertPanel({ alerts }: AlertPanelProps) {
           <button
             key={type}
             onClick={() => setFilter(type)}
-            className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition ${
+            className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
               filter === type
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-accent text-white'
+                : 'bg-surface-elevated text-text-muted hover:bg-surface-hover hover:text-text-secondary'
             }`}
           >
             {type}
@@ -37,7 +37,7 @@ export default function AlertPanel({ alerts }: AlertPanelProps) {
       </div>
       <div className="flex-1 overflow-y-auto space-y-2">
         {filtered.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-6">No alerts</p>
+          <p className="text-sm text-text-muted text-center py-6">No alerts</p>
         )}
         {filtered.map((alert) => (
           <AlertCard key={alert.id} alert={alert} />

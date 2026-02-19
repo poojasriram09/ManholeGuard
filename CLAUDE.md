@@ -15,7 +15,7 @@ Fully implemented Turborepo monorepo. All free-tier deployment: Firebase Auth (S
 - **Monorepo**: Turborepo with npm
 - **Backend** (`apps/api/`): Express.js 4.x + TypeScript (strict) + Prisma 5.x + PostgreSQL 15 (Supabase) + Zod validation, hosted on Render (free)
 - **Auth**: Firebase Authentication (Email/Password + Google sign-in) — backend verifies Firebase ID tokens, maps to Prisma UUIDs
-- **Dashboard** (`apps/dashboard/`): React 18 + Vite + TypeScript + Tailwind + Zustand + TanStack Query + Recharts + Leaflet
+- **Dashboard** (`apps/dashboard/`): React 18 + Vite + TypeScript + Tailwind + Zustand + TanStack Query + Recharts + Leaflet — **Dark industrial command center theme** (Google Fonts: Outfit/DM Sans/JetBrains Mono, CSS custom properties design system, glassmorphic sidebar, safety color glow effects, 13 CSS keyframe animations)
 - **Worker App** (`apps/worker-app/`): React PWA + html5-qrcode + Dexie.js (IndexedDB) + Service Worker + Web Push
 - **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth)
 - **Shared** (`packages/shared/`): TypeScript types, constants, i18n translations (6 languages)
@@ -118,6 +118,7 @@ All phases complete. Firebase migration done. Database live on Supabase with see
 | 8 | Citizen portal + grievances | Done |
 | 9 | Compliance reports + audit trail | Done |
 | 10 | Deployment config | Done (Firebase Hosting + Render + cron-job.org) |
+| 11 | Dashboard UI Overhaul — "Industrial Command Center" | Done (~70 files, pure visual, zero logic changes) |
 
 ### Configuration Status
 
@@ -140,6 +141,35 @@ All phases complete. Firebase migration done. Database live on Supabase with see
 3. **Deploy to Render** — push to GitHub, connect repo in Render dashboard, set env vars.
 4. **Deploy to Firebase Hosting** — `npm run deploy:hosting` after building frontends.
 5. **Set up cron-job.org** — create 5 jobs pointing to Render API URL with `x-cron-secret` header.
+
+### Dashboard UI Overhaul (Phase 11)
+
+Complete visual transformation of `apps/dashboard/` from generic light-themed CRUD panel to dark industrial command center. **Zero logic changes** — all API calls, routes, and state management unchanged. ~70 files modified across 7 tiers:
+
+**Design System** (`index.css` + `tailwind.config.js`):
+- 50+ CSS custom properties (backgrounds, text, borders, safety colors, chart palette, shadows, transitions)
+- Fonts: Outfit (headings via `.font-heading`), DM Sans (body), JetBrains Mono (data/code)
+- Colors: `safe` (emerald), `caution` (amber), `danger` (crimson), `accent` (blue), `live` (cyan) — each with `-muted` variant
+- Surface layers: `surface-base` → `surface` → `surface-card` → `surface-elevated` → `surface-hover`
+- CSS component classes: `.card-surface`, `.glass`, `.bg-grid`, `.input-dark`, `.btn-primary`
+- 13 `@keyframes`: fadeInUp, fadeIn, slideInRight, scaleIn, pulseGlow, shimmer, breathe, progressFill, borderPulse, countUp, slideInLeft, spin, gradientShift
+- `prefers-reduced-motion` media query for accessibility
+- Leaflet popup dark overrides
+
+**Layout**: Glassmorphic sidebar (`.glass` + 15 SVG Heroicons), dark header with pulsing cyan LIVE indicator, `.bg-grid` main area with `animate-fade-in-up` route transitions
+
+**Key Patterns Applied Across All Components**:
+- `bg-white` → `.card-surface` | `bg-gray-50` → `bg-surface-elevated` | `shadow` → `shadow-card`
+- `text-gray-800` → `text-text-primary` | `text-gray-500` → `text-text-secondary` | `text-gray-400` → `text-text-muted`
+- `divide-gray-200` → `divide-border` | `border-gray-300` → `border-border` | `hover:bg-gray-50` → `hover:bg-surface-hover`
+- Form inputs: `.input-dark` class | Submit buttons: `.btn-primary` class
+- Status badges: `bg-{color}-muted text-{color} border border-{color}/20`
+- Section headings: `font-heading` added
+- Tables: `.card-surface` wrapper, `bg-surface-elevated` thead, `divide-border` rows
+- Charts (Recharts): CSS variable tooltips, `var(--chart-grid)` grid, `var(--text-muted)` axes
+- Heatmap: CartoDB dark tile layer replacing OSM light tiles
+
+**Google Fonts loaded via CDN** in `index.html` (preconnect + stylesheet). Zero new npm dependencies.
 
 ### Bug Fixes Applied
 - **Login redirect race condition** (dashboard): `LoginPage` was calling `navigate('/')` immediately after `signInWithEmailAndPassword`, before `onAuthStateChanged` → `/auth/sync` had completed. Fixed by using `useEffect` on `user` state to redirect only after sync finishes.

@@ -7,42 +7,42 @@ export default function IncidentsPage() {
     queryFn: () => api.get<{ data: any[] }>('/incidents'),
   });
 
-  if (isLoading) return <div className="text-center py-10">Loading...</div>;
+  if (isLoading) return <div className="text-center py-10 text-text-muted">Loading...</div>;
   const incidents = data?.data ?? [];
 
   const severityColors: Record<string, string> = {
-    LOW: 'bg-blue-100 text-blue-800',
-    MEDIUM: 'bg-yellow-100 text-yellow-800',
-    HIGH: 'bg-orange-100 text-orange-800',
-    CRITICAL: 'bg-red-100 text-red-800',
+    LOW: 'bg-accent-muted text-accent-strong border border-accent/20',
+    MEDIUM: 'bg-caution-muted text-caution border border-caution/20',
+    HIGH: 'bg-caution-muted text-caution border border-caution/20',
+    CRITICAL: 'bg-danger-muted text-danger border border-danger/20',
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Incidents</h1>
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <h1 className="font-heading text-2xl font-bold text-text-primary mb-6">Incidents</h1>
+      <div className="card-surface overflow-hidden">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-surface-elevated">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Worker</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Severity</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Type</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Location</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Worker</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Severity</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-text-muted uppercase">Time</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border">
             {incidents.map((inc: any) => (
-              <tr key={inc.id}>
-                <td className="px-6 py-4 text-sm">{inc.incidentType}</td>
-                <td className="px-6 py-4 text-sm">{inc.manhole?.area}</td>
-                <td className="px-6 py-4 text-sm">{inc.worker?.name || '—'}</td>
+              <tr key={inc.id} className="hover:bg-surface-hover transition-colors">
+                <td className="px-6 py-4 text-sm text-text-primary">{inc.incidentType}</td>
+                <td className="px-6 py-4 text-sm text-text-secondary">{inc.manhole?.area}</td>
+                <td className="px-6 py-4 text-sm text-text-secondary">{inc.worker?.name || '—'}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${severityColors[inc.severity]}`}>{inc.severity}</span>
                 </td>
-                <td className="px-6 py-4 text-sm">{inc.resolved ? 'Resolved' : 'Open'}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{new Date(inc.timestamp).toLocaleString()}</td>
+                <td className="px-6 py-4 text-sm text-text-secondary">{inc.resolved ? 'Resolved' : 'Open'}</td>
+                <td className="px-6 py-4 text-sm text-text-muted">{new Date(inc.timestamp).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>

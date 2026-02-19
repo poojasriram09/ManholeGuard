@@ -31,38 +31,38 @@ export default function EntryDetailModal({ entry, open, onClose }: EntryDetailMo
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-gray-500 uppercase">Worker</p>
-            <p className="font-medium">{entry.worker?.name ?? 'N/A'}</p>
+            <p className="text-xs text-text-muted uppercase">Worker</p>
+            <p className="font-medium text-text-primary">{entry.worker?.name ?? 'N/A'}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase">Manhole</p>
-            <p className="font-medium">{entry.manhole?.qrCodeId ?? 'N/A'} &mdash; {entry.manhole?.area ?? ''}</p>
+            <p className="text-xs text-text-muted uppercase">Manhole</p>
+            <p className="font-medium text-text-primary">{entry.manhole?.qrCodeId ?? 'N/A'} &mdash; {entry.manhole?.area ?? ''}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase">Entry Time</p>
-            <p className="font-medium">{entry.entryTime ? new Date(entry.entryTime).toLocaleString() : '---'}</p>
+            <p className="text-xs text-text-muted uppercase">Entry Time</p>
+            <p className="font-medium text-text-primary">{entry.entryTime ? new Date(entry.entryTime).toLocaleString() : '---'}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase">Exit Time</p>
-            <p className="font-medium">{entry.exitTime ? new Date(entry.exitTime).toLocaleString() : 'Still underground'}</p>
+            <p className="text-xs text-text-muted uppercase">Exit Time</p>
+            <p className="font-medium text-text-primary">{entry.exitTime ? new Date(entry.exitTime).toLocaleString() : 'Still underground'}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase">Duration</p>
-            <p className="font-medium">{entry.entryTime ? formatDuration(entry.entryTime, entry.exitTime) : '---'}</p>
+            <p className="text-xs text-text-muted uppercase">Duration</p>
+            <p className="font-medium text-text-primary">{entry.entryTime ? formatDuration(entry.entryTime, entry.exitTime) : '---'}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase">State</p>
+            <p className="text-xs text-text-muted uppercase">State</p>
             <Badge variant={stateVariant[entry.state] ?? 'default'}>{entry.state}</Badge>
           </div>
         </div>
 
         {entry.checkIns && entry.checkIns.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">Check-ins ({entry.checkIns.length})</h3>
+            <h3 className="text-sm font-heading font-semibold text-text-primary mb-2">Check-ins ({entry.checkIns.length})</h3>
             <ul className="space-y-1">
               {entry.checkIns.map((ci: any, i: number) => (
-                <li key={i} className="text-sm text-gray-600 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                <li key={i} className="text-sm text-text-secondary flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-safe" />
                   {new Date(ci.time).toLocaleTimeString()}
                 </li>
               ))}
@@ -72,11 +72,11 @@ export default function EntryDetailModal({ entry, open, onClose }: EntryDetailMo
 
         {entry.checklist && (
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">Checklist</h3>
+            <h3 className="text-sm font-heading font-semibold text-text-primary mb-2">Checklist</h3>
             <ul className="space-y-1">
               {entry.checklist.map((item: any, i: number) => (
-                <li key={i} className="text-sm flex items-center gap-2">
-                  <span className={item.completed ? 'text-green-600' : 'text-red-500'}>
+                <li key={i} className="text-sm flex items-center gap-2 text-text-secondary">
+                  <span className={item.completed ? 'text-safe' : 'text-danger'}>
                     {item.completed ? '✓' : '✗'}
                   </span>
                   {item.label}
