@@ -19,8 +19,14 @@ RUN npm ci
 COPY packages/ packages/
 COPY apps/api/ apps/api/
 
-# Build API (tsc compiles to dist/)
-RUN cd apps/api && npx tsc
+# Bundle with esbuild: inlines @manholeguard/* workspace packages, externalizes npm deps
+RUN node -e " \
+  const pkg = JSON.parse(require('fs').readFileSync('./apps/api/package.json','utf8')); \
+  const ext = Object.keys(pkg.dependencies || {}).map(d => '--external:' + d).join(' '); \
+  require('child_process').execSync( \
+    'npx esbuild apps/api/src/index.ts --bundle --platform=node --target=node20 --outfile=apps/api/dist/index.js ' + ext, \
+    { stdio: 'inherit' } \
+  )"
 
 FROM node:20-alpine AS runner
 
@@ -28,7 +34,6 @@ RUN apk add --no-cache openssl
 
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
 COPY --from=builder /app/apps/api/package.json ./apps/api/
