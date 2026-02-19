@@ -19,8 +19,13 @@ import AuditLogPage from './pages/AuditLogPage';
 import SettingsPage from './pages/SettingsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = useAuthStore((s) => s.token);
-  if (!token) return <Navigate to="/login" replace />;
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>;
+  }
+  if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 

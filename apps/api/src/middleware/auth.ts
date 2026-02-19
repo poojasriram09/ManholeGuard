@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env';
+import { firebaseAuth } from '../config/firebase-admin';
 import prisma from '../config/database';
 
 export interface AuthUser {
@@ -25,13 +24,27 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
   }
 
   const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as AuthUser;
-    req.user = decoded;
-    next();
-  } catch {
-    res.status(401).json({ success: false, error: { code: 'INVALID_TOKEN', message: 'Token is invalid or expired' } });
-  }
+
+  firebaseAuth
+    .verifyIdToken(token)
+    .then(async (decoded) => {
+      // Look up Prisma user by Firebase UID — keeps req.user.id as Prisma UUID
+      const user = await prisma.user.findUnique({
+        where: { firebaseUid: decoded.uid },
+        select: { id: true, email: true, role: true, isActive: true },
+      });
+
+      if (!user || !user.isActive) {
+        res.status(401).json({ success: false, error: { code: 'USER_NOT_FOUND', message: 'User account not found or inactive' } });
+        return;
+      }
+
+      req.user = { id: user.id, email: user.email, role: user.role };
+      next();
+    })
+    .catch(() => {
+      res.status(401).json({ success: false, error: { code: 'INVALID_TOKEN', message: 'Token is invalid or expired' } });
+    });
 }
 
 export function authorize(...roles: string[]) {

@@ -1,3 +1,5 @@
+# Local development only — PostgreSQL for Prisma
+# App servers run via `npm run dev`, Firebase Emulators via `npm run emulators`
 services:
   postgres:
     image: postgres:15-alpine
@@ -15,63 +17,5 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - '6379:6379'
-    volumes:
-      - redisdata:/data
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    ports:
-      - '4000:4000'
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/manholeguard
-      DIRECT_URL: postgresql://postgres:password@postgres:5432/manholeguard
-      REDIS_URL: redis://redis:6379
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  dashboard:
-    build:
-      context: .
-      dockerfile: apps/dashboard/Dockerfile
-    ports:
-      - '3000:3000'
-    env_file:
-      - .env
-
-  worker-app:
-    build:
-      context: .
-      dockerfile: apps/worker-app/Dockerfile
-    ports:
-      - '3001:3001'
-    env_file:
-      - .env
-
-  citizen-portal:
-    build:
-      context: .
-      dockerfile: apps/citizen-portal/Dockerfile
-    ports:
-      - '3002:3002'
-    env_file:
-      - .env
-
 volumes:
   pgdata:
-  redisdata:

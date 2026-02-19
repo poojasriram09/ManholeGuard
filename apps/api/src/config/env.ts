@@ -15,8 +15,8 @@ export const env = {
   SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!,
 
-  // Auth
-  JWT_SECRET: process.env.JWT_SECRET || 'dev-secret',
+  // Firebase (FIREBASE_SERVICE_ACCOUNT_KEY is read directly by firebase-admin.ts)
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '',
 
   // External APIs
   OPENMETEO_BASE_URL: process.env.OPENMETEO_BASE_URL || 'https://api.open-meteo.com/v1/forecast',
@@ -63,8 +63,6 @@ export const env = {
   VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY || '',
   VAPID_SUBJECT: process.env.VAPID_SUBJECT || 'mailto:admin@manholeguard.in',
 
-  // Redis
-  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
 
   // Reports
   REPORT_STORAGE_PATH: process.env.REPORT_STORAGE_PATH || '/tmp/reports',

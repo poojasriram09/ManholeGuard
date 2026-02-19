@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "manholeguard"
+  },
+  "targets": {
+    "manholeguard": {
+      "hosting": {
+        "dashboard": ["manholeguard-dashboard"],
+        "worker-app": ["manholeguard-worker"],
+        "citizen-portal": ["manholeguard-citizen"]
+      }
+    }
+  }
+}

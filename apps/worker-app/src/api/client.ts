@@ -1,7 +1,11 @@
+import { auth } from '../lib/firebase';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
 export async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = localStorage.getItem('worker-token');
+  // Get fresh Firebase ID token (auto-refreshing)
+  const token = await auth.currentUser?.getIdToken();
+
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {

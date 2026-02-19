@@ -1,97 +1,116 @@
+import { onRequest } from 'firebase-functions/v2/https';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { setGlobalOptions } from 'firebase-functions/v2/options';
 import app from './app';
-import { env } from './config/env';
 import prisma from './config/database';
-import { scheduledJobsQueue } from './config/bullmq';
 import { TimerMonitorService } from './services/timer-monitor.service';
+import { RiskEngineService } from './services/risk-engine.service';
+import { MaintenanceService } from './services/maintenance.service';
+import { WeatherService } from './services/weather.service';
+import { AlertService } from './services/alert.service';
+import { CertificationService } from './services/certification.service';
 import { logger } from './utils/logger';
 
-// Import BullMQ workers so they start processing
-import { riskRecalculationWorker } from './jobs/risk-recalculation.job';
-import { reportGenerationWorker } from './jobs/report-generation.job';
-import { maintenanceSchedulerWorker } from './jobs/maintenance-scheduler.job';
-import { weatherAlertCheckWorker } from './jobs/weather-alert-check.job';
-import { certificationExpiryWorker } from './jobs/certification-expiry.job';
+// Set global options for all functions
+setGlobalOptions({ region: 'asia-south1' });
 
-const timerMonitor = new TimerMonitorService();
+// ── Main API (Express) ──
+// minInstances: 1 eliminates cold starts for safety-critical endpoints
+export const api = onRequest(
+  { minInstances: 1, timeoutSeconds: 60, memory: '512MiB' },
+  app
+);
 
-async function scheduleRecurringJobs() {
-  // Risk recalculation — every 6 hours
-  await scheduledJobsQueue.add('risk-recalculation', {}, {
-    repeat: { pattern: '0 */6 * * *' },
-    removeOnComplete: 10,
-    removeOnFail: 5,
-  });
+// ── Scheduled Functions (replacing BullMQ) ──
 
-  // Maintenance scheduler — daily at midnight
-  await scheduledJobsQueue.add('maintenance-scheduler', {}, {
-    repeat: { pattern: '0 0 * * *' },
-    removeOnComplete: 10,
-    removeOnFail: 5,
-  });
+// Timer monitor — safety-critical dead man's switch (every 1 minute)
+export const timerMonitor = onSchedule(
+  { schedule: 'every 1 minutes', timeoutSeconds: 55, memory: '256MiB' },
+  async () => {
+    const monitor = new TimerMonitorService();
+    await monitor.tick();
+    logger.info('Timer monitor tick completed');
+  }
+);
 
-  // Weather alert check — every 2 hours
-  await scheduledJobsQueue.add('weather-alert-check', {}, {
-    repeat: { pattern: '0 */2 * * *' },
-    removeOnComplete: 10,
-    removeOnFail: 5,
-  });
+// Risk recalculation — every 6 hours
+export const riskRecalculation = onSchedule(
+  { schedule: 'every 6 hours', timeoutSeconds: 300, memory: '512MiB' },
+  async () => {
+    const riskEngine = new RiskEngineService();
+    const manholes = await prisma.manhole.findMany({ select: { id: true } });
+    let success = 0;
+    let failed = 0;
 
-  // Certification expiry — daily at 6 AM
-  await scheduledJobsQueue.add('certification-expiry', {}, {
-    repeat: { pattern: '0 6 * * *' },
-    removeOnComplete: 10,
-    removeOnFail: 5,
-  });
+    for (const manhole of manholes) {
+      try {
+        await riskEngine.predictRisk(manhole.id);
+        success++;
+      } catch (error) {
+        failed++;
+        logger.error(`Risk recalc failed for manhole ${manhole.id}:`, error);
+      }
+    }
 
-  logger.info('Recurring BullMQ jobs scheduled');
-}
+    logger.info(`Risk recalculation complete: ${success} ok, ${failed} failed of ${manholes.length}`);
+  }
+);
 
-async function main() {
-  try {
-    await prisma.$connect();
-    logger.info('Database connected');
+// Maintenance scheduler — daily at midnight IST (18:30 UTC)
+export const maintenanceScheduler = onSchedule(
+  { schedule: 'every day 18:30', timeZone: 'Asia/Kolkata', timeoutSeconds: 120, memory: '256MiB' },
+  async () => {
+    const maintenanceService = new MaintenanceService();
+    const overdueCount = await maintenanceService.checkOverdue();
+    const scheduled = await maintenanceService.autoSchedule();
+    logger.info(`Maintenance scheduler: ${overdueCount} overdue, ${scheduled.length} newly scheduled`);
+  }
+);
 
-    // Start timer monitor (dead man's switch heartbeat)
-    timerMonitor.start();
+// Weather alert check — every 2 hours
+export const weatherAlertCheck = onSchedule(
+  { schedule: 'every 2 hours', timeoutSeconds: 120, memory: '256MiB' },
+  async () => {
+    const weatherService = new WeatherService();
+    const alertService = new AlertService();
 
-    // Schedule recurring background jobs
-    await scheduleRecurringJobs();
-
-    const server = app.listen(env.PORT, () => {
-      logger.info(`ManholeGuard API running on port ${env.PORT}`);
-      logger.info(`Environment: ${env.NODE_ENV}`);
+    const activeEntries = await prisma.entryLog.findMany({
+      where: { status: 'ACTIVE' },
+      include: { manhole: { select: { id: true, area: true, latitude: true, longitude: true } } },
     });
 
-    // Graceful shutdown
-    const shutdown = async (signal: string) => {
-      logger.info(`${signal} received. Shutting down gracefully...`);
+    const checkedAreas = new Set<string>();
+    let alertsTriggered = 0;
 
-      // Stop the timer monitor
-      timerMonitor.stop();
+    for (const entry of activeEntries) {
+      const area = entry.manhole.area;
+      if (checkedAreas.has(area)) continue;
+      checkedAreas.add(area);
 
-      // Close BullMQ workers
-      await Promise.allSettled([
-        riskRecalculationWorker.close(),
-        reportGenerationWorker.close(),
-        maintenanceSchedulerWorker.close(),
-        weatherAlertCheckWorker.close(),
-        certificationExpiryWorker.close(),
-      ]);
-      logger.info('BullMQ workers closed');
+      try {
+        const isSafe = await weatherService.isSafeToWork(entry.manhole.id);
+        if (!isSafe) {
+          const count = await alertService.triggerWeatherAlert(
+            area,
+            'Severe weather conditions detected. Consider evacuating workers.'
+          );
+          alertsTriggered += count;
+        }
+      } catch (error) {
+        logger.error(`Weather check failed for area ${area}:`, error);
+      }
+    }
 
-      server.close(async () => {
-        await prisma.$disconnect();
-        logger.info('Server shut down');
-        process.exit(0);
-      });
-    };
-
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
+    logger.info(`Weather alert check: ${checkedAreas.size} areas, ${alertsTriggered} alerts`);
   }
-}
+);
 
-main();
+// Certification expiry — daily at 6 AM IST (00:30 UTC)
+export const certificationExpiry = onSchedule(
+  { schedule: 'every day 06:00', timeZone: 'Asia/Kolkata', timeoutSeconds: 120, memory: '256MiB' },
+  async () => {
+    const certService = new CertificationService();
+    const expiringSoon = await certService.checkExpiringCerts();
+    logger.info(`Certification expiry check: ${expiringSoon.length} expiring soon`);
+  }
+);

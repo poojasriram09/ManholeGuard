@@ -33,7 +33,7 @@ export class TimerMonitorService {
     }
   }
 
-  private async tick() {
+  async tick() {
     try {
       await Promise.allSettled([
         this.checkActiveEntries(),

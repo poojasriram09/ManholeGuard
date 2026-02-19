@@ -3,8 +3,15 @@ dist/
 .turbo/
 .env
 .env.local
+.env.production
 *.log
 .DS_Store
 coverage/
 tmp/
 .cache/
+
+# Firebase
+.firebase/
+firebase-debug.log
+ui-debug.log
+*-debug.log

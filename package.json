@@ -12,7 +12,11 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "deploy": "turbo run build && firebase deploy",
+    "deploy:functions": "turbo run build --filter=@manholeguard/api && firebase deploy --only functions",
+    "deploy:hosting": "turbo run build --filter=@manholeguard/dashboard --filter=@manholeguard/worker-app --filter=@manholeguard/citizen-portal && firebase deploy --only hosting",
+    "emulators": "firebase emulators:start"
   },
   "devDependencies": {
     "turbo": "^2.0.0",

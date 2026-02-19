@@ -1,12 +1,20 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validate';
-import { loginSchema, registerSchema } from '../validators';
+import { registerSchema } from '../validators';
 import { AuthController } from '../controllers/auth.controller';
+import { authenticate, authorize } from '../middleware/auth';
 
 const router = Router();
 const controller = new AuthController();
 
-router.post('/register', validate(registerSchema), controller.register);
-router.post('/login', validate(loginSchema), controller.login);
+// Admin-only: register new users (creates in Firebase + Prisma)
+router.post('/register', authenticate, authorize('ADMIN'), validate(registerSchema), controller.register);
+
+// After Firebase sign-in on frontend, sync/create Prisma user
+// Does NOT use authenticate middleware (user may not exist in Prisma yet)
+router.post('/sync', controller.sync);
+
+// Get current user profile (requires authenticated user)
+router.get('/me', authenticate, controller.me);
 
 export default router;

@@ -8,17 +8,20 @@ ManholeGuard is a predictive, QR-based digital safety system protecting sanitati
 
 ## Repository State
 
-This is a **pre-implementation** Turborepo monorepo. The spec (`MANHOLEGUARD_CLAUDE_CODE.md`) is the single source of truth — all code is generated from it.
+Fully implemented Turborepo monorepo, deployed via Firebase (Auth + Hosting + Functions). PostgreSQL remains on Supabase.
 
 ## Tech Stack
 
 - **Monorepo**: Turborepo with npm
-- **Backend** (`apps/api/`): Express.js 4.x + TypeScript (strict) + Prisma 5.x + PostgreSQL 15 (Supabase) + BullMQ/Redis + Zod validation
+- **Backend** (`apps/api/`): Express.js 4.x + TypeScript (strict) + Prisma 5.x + PostgreSQL 15 (Supabase) + Firebase Functions + Zod validation
+- **Auth**: Firebase Authentication (Email/Password + Google sign-in) — backend verifies Firebase ID tokens, maps to Prisma UUIDs
 - **Dashboard** (`apps/dashboard/`): React 18 + Vite + TypeScript + Tailwind + Zustand + TanStack Query + Recharts + Leaflet
 - **Worker App** (`apps/worker-app/`): React PWA + html5-qrcode + Dexie.js (IndexedDB) + Service Worker + Web Push
-- **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet
+- **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth)
 - **Shared** (`packages/shared/`): TypeScript types, constants, i18n translations (6 languages)
 - **Offline Sync** (`packages/offline-sync/`): Shared offline sync logic
+- **Hosting**: Firebase Hosting (3 targets: dashboard, worker-app, citizen-portal)
+- **Scheduled Jobs**: Firebase Cloud Scheduler (replaces BullMQ/Redis)
 
 ## Build & Development Commands
 
@@ -26,8 +29,8 @@ This is a **pre-implementation** Turborepo monorepo. The spec (`MANHOLEGUARD_CLA
 # Install dependencies
 npm install
 
-# Start infrastructure
-docker-compose up -d postgres redis
+# Start PostgreSQL for local dev
+docker-compose up -d postgres
 
 # Database (from repo root or apps/api/)
 npx prisma migrate dev --name init
@@ -36,10 +39,21 @@ npx prisma db seed
 # Dev servers (each in its own terminal or via turbo)
 npm run dev                              # all apps via turbo (api:4000, dashboard:3000, worker-app:3001, citizen-portal:3002)
 
+# Firebase emulators (Auth emulator for local testing)
+npm run emulators
+
+# Deploy
+npm run deploy                           # build all + deploy everything
+npm run deploy:functions                 # deploy API only
+npm run deploy:hosting                   # deploy frontends only
+
 # Run tests (Vitest)
 npx vitest                               # all tests
 npx vitest run apps/api/src/services/    # specific directory
 npx vitest run checkin.test.ts           # single test file
+
+# User migration (existing bcrypt passwords → Firebase Auth)
+npx tsx scripts/migrate-users-to-firebase.ts
 ```
 
 ## Architecture
@@ -50,8 +64,8 @@ npx vitest run checkin.test.ts           # single test file
 - **Routes** (`apps/api/src/routes/`): Express route definitions with Zod middleware validation
 - **Controllers** (`apps/api/src/controllers/`): Request/response handling, delegates to services
 - **Services** (`apps/api/src/services/`): All domain logic — risk engine, alerts, check-ins, fatigue, gas monitoring, etc.
-- **Middleware** (`apps/api/src/middleware/`): auth (JWT), errorHandler, rateLimiter, auditLog, geoFence
-- **Jobs** (`apps/api/src/jobs/`): BullMQ background processors (PDF generation, SMS, scheduled checks)
+- **Middleware** (`apps/api/src/middleware/`): auth (Firebase ID token verification), errorHandler, rateLimiter, auditLog, geoFence
+- **Scheduled Functions** (`apps/api/src/index.ts`): Firebase Cloud Scheduler functions (timer monitor, risk recalc, maintenance, weather, certifications)
 - **Validators** (`apps/api/src/validators/`): Zod schemas for all API inputs
 
 ### Core Domain Logic
