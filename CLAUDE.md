@@ -108,19 +108,37 @@ IDLE → SCANNED → CHECKLIST_PENDING → ENTERED → ACTIVE → EXITED
 | Twilio/MSG91 | SMS gateway | Alert notifications |
 | web-push | VAPID | Browser push notifications |
 
-## Implementation Priority
+## Implementation Progress
 
-Follow the spec's Appendix D order:
-1. Prisma schema + migrations + seed data
-2. Auth + user management
-3. Core entry flow (QR scan → geo-fence → checklist → risk check → entry → state machine)
-4. Timer monitor + dead man's switch + alerts
-5. Dashboard (live entries, heatmap, analytics)
-6. Worker PWA (offline, QR scanner, check-in UI)
-7. Extended features (gas sensors, fatigue, SOS, certifications, maintenance)
-8. Citizen portal + grievances
-9. Compliance reports + audit trail
-10. Deployment (Docker Compose)
+All phases complete. Firebase migration done.
+
+| # | Phase | Status |
+|---|-------|--------|
+| 1 | Prisma schema + migrations + seed data | Done |
+| 2 | Auth + user management | Done (Firebase Auth) |
+| 3 | Core entry flow (QR scan → geo-fence → checklist → risk → state machine) | Done |
+| 4 | Timer monitor + dead man's switch + alerts | Done (Firebase Scheduled Function) |
+| 5 | Dashboard (live entries, heatmap, analytics) | Done |
+| 6 | Worker PWA (offline, QR scanner, check-in UI) | Done |
+| 7 | Extended features (gas sensors, fatigue, SOS, certifications, maintenance) | Done |
+| 8 | Citizen portal + grievances | Done |
+| 9 | Compliance reports + audit trail | Done |
+| 10 | Deployment | Done (Firebase Hosting + Functions) |
+
+### Firebase Migration (completed)
+- **Auth**: JWT/bcrypt replaced with Firebase Auth (Email/Password + Google sign-in). `firebaseUid` field on User model. Auth middleware verifies Firebase ID tokens and maps to Prisma UUIDs — zero changes to 30+ services.
+- **Functions**: Express API exported as `onRequest` Cloud Function with `minInstances: 1`. Five scheduled functions replace BullMQ/Redis (timer monitor, risk recalc, maintenance, weather alerts, cert expiry).
+- **Hosting**: 3 Firebase Hosting targets (dashboard, worker-app, citizen-portal) with SPA rewrites.
+- **Removed**: BullMQ, ioredis, node-cron, jsonwebtoken, bcryptjs (runtime). Jobs directory deleted.
+- **Kept**: PostgreSQL on Supabase, Prisma ORM, all services/controllers unchanged.
+- **Migration script**: `scripts/migrate-users-to-firebase.ts` imports existing bcrypt-hashed passwords via `importUsers()`.
+
+### Local Development Setup
+1. `firebase login` (one-time, requires browser)
+2. `docker-compose up -d postgres` (local PostgreSQL)
+3. `npm run dev` (all apps via turbo)
+4. `npm run emulators` (Firebase Auth/Functions/Hosting emulators)
+5. Frontends auto-connect to Auth emulator when `VITE_FIREBASE_EMULATOR=true`
 
 ## Key Design Principles
 
