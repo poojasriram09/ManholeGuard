@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import ReportIssuePage from './pages/ReportIssuePage';
 import TrackStatusPage from './pages/TrackStatusPage';
 import PublicHeatmapPage from './pages/PublicHeatmapPage';
+import LoginPortalPage from './pages/LoginPortalPage';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
             <a href="/" className="text-text-secondary hover:text-text-primary transition-colors">Report</a>
             <a href="/track" className="text-text-secondary hover:text-text-primary transition-colors">Track</a>
             <a href="/heatmap" className="text-text-secondary hover:text-text-primary transition-colors">Map</a>
+            <a href="/login" className="text-text-secondary hover:text-text-primary transition-colors">Login</a>
           </nav>
         </div>
       </header>
@@ -21,6 +23,7 @@ export default function App() {
           <Route path="/" element={<ReportIssuePage />} />
           <Route path="/track" element={<TrackStatusPage />} />
           <Route path="/heatmap" element={<PublicHeatmapPage />} />
+          <Route path="/login" element={<LoginPortalPage />} />
         </Routes>
       </main>
     </div>
