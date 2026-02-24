@@ -41,24 +41,24 @@ export default function ChecklistPage() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Pre-Entry Safety Checklist</h1>
-      {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
+    <div className="p-4 animate-fade-in-up">
+      <h1 className="text-xl font-bold font-heading text-text-primary mb-4">Pre-Entry Safety Checklist</h1>
+      {error && <div className="bg-danger-muted text-danger p-3 rounded-lg mb-4">{error}</div>}
 
       <div className="space-y-2 mb-6">
         {PPE_ITEMS.map((item) => (
           <button key={item.id} onClick={() => toggle(item.id)}
             className={`w-full flex items-center p-4 rounded-xl border-2 transition-colors ${
-              checked[item.id] ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white'
+              checked[item.id] ? 'border-safe bg-safe-muted' : 'border-border bg-surface-card'
             }`}>
             <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mr-3 ${
-              checked[item.id] ? 'border-green-500 bg-green-500 text-white' : 'border-gray-300'
+              checked[item.id] ? 'border-safe bg-safe text-white' : 'border-text-muted'
             }`}>
               {checked[item.id] && '✓'}
             </div>
             <div className="text-left">
-              <p className="text-sm font-medium">{item.label}</p>
-              {item.mandatory && <p className="text-xs text-red-500">Required</p>}
+              <p className="text-text-primary text-sm font-medium">{item.label}</p>
+              {item.mandatory && <p className="text-danger text-xs">Required</p>}
             </div>
           </button>
         ))}
@@ -66,7 +66,7 @@ export default function ChecklistPage() {
 
       <button onClick={handleSubmit} disabled={!allMandatoryChecked}
         className={`w-full rounded-xl py-4 text-lg font-semibold ${
-          allMandatoryChecked ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-500'
+          allMandatoryChecked ? 'bg-safe text-white' : 'bg-surface-elevated text-text-muted'
         }`}>
         {allMandatoryChecked ? 'Confirm & Enter' : 'Complete all required items'}
       </button>

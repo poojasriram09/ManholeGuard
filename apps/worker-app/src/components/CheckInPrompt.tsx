@@ -96,16 +96,16 @@ export default function CheckInPrompt({
   const isCritical = countdown <= 5;
 
   const ringColor = isCritical
-    ? 'text-red-500'
+    ? 'text-danger'
     : isUrgent
-      ? 'text-yellow-400'
-      : 'text-green-400';
+      ? 'text-caution'
+      : 'text-safe';
 
   const bgPulse = isCritical
-    ? 'animate-pulse bg-red-950'
+    ? 'animate-pulse bg-danger-muted'
     : isUrgent
-      ? 'bg-gray-950'
-      : 'bg-gray-950';
+      ? 'bg-surface-base'
+      : 'bg-surface-base';
 
   // Progress for countdown ring
   const totalSeconds = 60;
@@ -127,7 +127,7 @@ export default function CheckInPrompt({
         <button
           type="button"
           onClick={onDismiss}
-          className="p-2 text-gray-400 hover:text-white"
+          className="p-2 text-text-muted hover:text-white"
           aria-label={t('common.close')}
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,7 +141,7 @@ export default function CheckInPrompt({
         <span className={`text-5xl font-mono font-bold ${ringColor}`}>
           {countdown}
         </span>
-        <span className="block text-gray-400 text-sm mt-1">
+        <span className="block text-text-muted text-sm mt-1">
           seconds remaining
         </span>
       </div>
@@ -190,8 +190,8 @@ export default function CheckInPrompt({
             transition-all duration-150 active:scale-95
             disabled:opacity-50 disabled:cursor-not-allowed
             ${responding
-              ? 'bg-green-700 w-[230px] h-[230px]'
-              : 'bg-green-600 hover:bg-green-500 active:bg-green-700 w-[230px] h-[230px]'
+              ? 'bg-safe w-[230px] h-[230px]'
+              : 'bg-safe hover:bg-safe active:bg-safe w-[230px] h-[230px]'
             }
           `}
           style={{ width: 250, height: 250 }}
@@ -230,7 +230,7 @@ export default function CheckInPrompt({
               <span className="text-white text-2xl font-extrabold">
                 {t('checkin.respond')}
               </span>
-              <span className="text-green-200 text-sm mt-1">
+              <span className="text-safe text-sm mt-1">
                 {t('checkin.tapToConfirm')}
               </span>
             </div>
@@ -240,11 +240,11 @@ export default function CheckInPrompt({
 
       {/* Countdown expired message */}
       {countdown <= 0 && !responding && (
-        <div className="mt-8 px-6 py-4 bg-red-900 rounded-xl text-center max-w-xs">
-          <p className="text-red-200 font-bold text-lg">
+        <div className="mt-8 px-6 py-4 bg-danger-muted border border-danger/30 rounded-xl text-center max-w-xs">
+          <p className="text-danger font-bold text-lg">
             {t('checkin.missed')}
           </p>
-          <p className="text-red-300 text-sm mt-1">
+          <p className="text-text-secondary text-sm mt-1">
             Supervisor has been notified
           </p>
         </div>

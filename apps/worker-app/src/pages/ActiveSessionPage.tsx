@@ -32,25 +32,25 @@ export default function ActiveSessionPage() {
   const isOvertime = minutes >= allowed;
 
   return (
-    <div className="p-4 text-center">
-      <h1 className="text-xl font-bold mb-2">Active Session</h1>
-      <p className="text-gray-500 mb-6">{entry?.manhole?.area} — {entry?.manhole?.qrCodeId}</p>
+    <div className="p-4 text-center animate-fade-in-up">
+      <h1 className="text-xl font-bold font-heading text-text-primary mb-2">Active Session</h1>
+      <p className="text-text-secondary mb-6">{entry?.manhole?.area} — {entry?.manhole?.qrCodeId}</p>
 
-      <div className={`text-6xl font-mono font-bold mb-4 ${isOvertime ? 'text-red-600' : 'text-blue-600'}`}>
+      <div className={`text-6xl font-mono font-bold mb-4 ${isOvertime ? 'text-danger' : 'text-accent'}`}>
         {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
       </div>
 
-      <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-        <div className={`h-3 rounded-full transition-all ${isOvertime ? 'bg-red-500' : progress > 80 ? 'bg-yellow-500' : 'bg-green-500'}`}
+      <div className="w-full bg-surface-elevated rounded-full h-3 mb-2">
+        <div className={`h-3 rounded-full transition-all ${isOvertime ? 'bg-danger' : progress > 80 ? 'bg-caution' : 'bg-safe'}`}
           style={{ width: `${progress}%` }} />
       </div>
-      <p className="text-sm text-gray-500 mb-8">Allowed: {allowed} minutes</p>
+      <p className="text-sm text-text-muted mb-8">Allowed: {allowed} minutes</p>
 
-      <button onClick={handleExit} className="w-full bg-blue-600 text-white rounded-xl py-4 text-lg font-semibold mb-4">
+      <button onClick={handleExit} className="btn-primary w-full rounded-xl py-4 text-lg font-semibold mb-4">
         Confirm Exit
       </button>
 
-      <button onClick={() => navigate('/sos')} className="w-full bg-red-600 text-white rounded-xl py-4 text-lg font-semibold">
+      <button onClick={() => navigate('/sos')} className="w-full bg-danger text-white rounded-xl py-4 text-lg font-semibold">
         SOS Emergency
       </button>
     </div>

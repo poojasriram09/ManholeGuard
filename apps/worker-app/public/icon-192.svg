@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <rect width="192" height="192" rx="32" fill="#1e40af"/>
+  <circle cx="96" cy="96" r="50" fill="none" stroke="#fbbf24" stroke-width="8"/>
+  <circle cx="96" cy="96" r="20" fill="#22c55e"/>
+  <path d="M96 30 L96 16 M96 176 L96 162 M30 96 L16 96 M176 96 L162 96" stroke="#60a5fa" stroke-width="4" stroke-linecap="round"/>
+  <text x="96" y="190" text-anchor="middle" fill="white" font-size="14" font-family="system-ui" font-weight="bold">MG</text>
+</svg>

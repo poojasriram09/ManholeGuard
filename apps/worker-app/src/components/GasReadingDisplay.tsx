@@ -51,22 +51,22 @@ function getGasLevel(gasId: string, value: number): GasLevel {
 
 const LEVEL_STYLES: Record<GasLevel, { bg: string; text: string; border: string; icon: string }> = {
   safe: {
-    bg: 'bg-green-900/40',
-    text: 'text-green-400',
-    border: 'border-green-700',
-    icon: 'text-green-500',
+    bg: 'bg-safe-muted',
+    text: 'text-safe',
+    border: 'border-safe/30',
+    icon: 'text-safe',
   },
   warning: {
-    bg: 'bg-yellow-900/40',
-    text: 'text-yellow-300',
-    border: 'border-yellow-600',
-    icon: 'text-yellow-400',
+    bg: 'bg-caution-muted',
+    text: 'text-caution',
+    border: 'border-caution/30',
+    icon: 'text-caution',
   },
   danger: {
-    bg: 'bg-red-900/50',
-    text: 'text-red-300',
-    border: 'border-red-600',
-    icon: 'text-red-400',
+    bg: 'bg-danger-muted',
+    text: 'text-danger',
+    border: 'border-danger/30',
+    icon: 'text-danger',
   },
 };
 
@@ -130,8 +130,8 @@ export default function GasReadingDisplay({ readings }: GasReadingDisplayProps) 
 
   if (!readings) {
     return (
-      <div className="rounded-xl bg-gray-800 p-4 border border-gray-700">
-        <div className="flex items-center gap-2 text-gray-400">
+      <div className="rounded-xl bg-surface-card p-4 border border-border">
+        <div className="flex items-center gap-2 text-text-muted">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -147,20 +147,20 @@ export default function GasReadingDisplay({ readings }: GasReadingDisplayProps) 
   }
 
   return (
-    <div className="rounded-xl bg-gray-900 border border-gray-700 overflow-hidden" role="region" aria-label="Gas readings">
+    <div className="rounded-xl bg-surface border border-border overflow-hidden" role="region" aria-label="Gas readings">
       {/* Header with overall status */}
       <div
         className={`px-4 py-3 flex items-center justify-between ${
           overallLevel === 'danger'
-            ? 'bg-red-900/60'
+            ? 'bg-danger-muted'
             : overallLevel === 'warning'
-              ? 'bg-yellow-900/40'
-              : 'bg-green-900/30'
+              ? 'bg-caution-muted'
+              : 'bg-safe-muted'
         }`}
       >
         <div className="flex items-center gap-2">
           {overallLevel === 'danger' ? (
-            <svg className="w-5 h-5 text-red-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-5 h-5 text-danger animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           ) : (
@@ -179,7 +179,7 @@ export default function GasReadingDisplay({ readings }: GasReadingDisplayProps) 
       </div>
 
       {/* Gas readings grid */}
-      <div className="grid grid-cols-2 gap-px bg-gray-800">
+      <div className="grid grid-cols-2 gap-px bg-surface-card">
         {gasEntries.map((gas) => {
           const styles = LEVEL_STYLES[gas.level];
           return (
@@ -190,14 +190,14 @@ export default function GasReadingDisplay({ readings }: GasReadingDisplayProps) 
               aria-label={`${gas.name}: ${gas.value} ${gas.unit}`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-400 uppercase tracking-wide font-medium">
+                <span className="text-xs text-text-muted uppercase tracking-wide font-medium">
                   {gas.id.toUpperCase()}
                 </span>
                 {gas.level !== 'safe' && (
                   <span
                     className={`
                       inline-block w-2 h-2 rounded-full
-                      ${gas.level === 'danger' ? 'bg-red-500 animate-pulse' : 'bg-yellow-500'}
+                      ${gas.level === 'danger' ? 'bg-danger animate-pulse' : 'bg-caution'}
                     `}
                     aria-hidden="true"
                   />
@@ -207,8 +207,8 @@ export default function GasReadingDisplay({ readings }: GasReadingDisplayProps) 
                 {gas.id === 'o2' ? gas.value.toFixed(1) : gas.value.toLocaleString()}
               </div>
               <div className="flex items-center justify-between mt-0.5">
-                <span className="text-xs text-gray-500">{gas.unit}</span>
-                <span className="text-xs text-gray-500">{gas.name}</span>
+                <span className="text-xs text-text-muted">{gas.unit}</span>
+                <span className="text-xs text-text-muted">{gas.name}</span>
               </div>
             </div>
           );
@@ -217,8 +217,8 @@ export default function GasReadingDisplay({ readings }: GasReadingDisplayProps) 
 
       {/* Danger banner */}
       {overallLevel === 'danger' && (
-        <div className="px-4 py-3 bg-red-800 text-center animate-pulse">
-          <span className="text-red-100 text-sm font-bold uppercase tracking-wider">
+        <div className="px-4 py-3 bg-danger text-center animate-pulse">
+          <span className="text-text-primary text-sm font-bold uppercase tracking-wider">
             {t('gas.evacuate')}
           </span>
         </div>

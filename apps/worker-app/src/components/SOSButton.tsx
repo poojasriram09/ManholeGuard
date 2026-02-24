@@ -137,8 +137,8 @@ export default function SOSButton() {
     return (
       <div className="fixed bottom-6 right-6 z-50">
         <div className="relative flex items-center justify-center w-20 h-20">
-          <div className="absolute inset-0 rounded-full bg-red-600 animate-ping opacity-50" />
-          <div className="relative flex flex-col items-center justify-center w-20 h-20 rounded-full bg-red-700 shadow-2xl">
+          <div className="absolute inset-0 rounded-full bg-danger animate-ping opacity-50" />
+          <div className="relative flex flex-col items-center justify-center w-20 h-20 rounded-full bg-danger shadow-glow-danger">
             {sending ? (
               <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
@@ -165,7 +165,7 @@ export default function SOSButton() {
     <div className="fixed bottom-6 right-6 z-50">
       <button
         type="button"
-        className="relative flex items-center justify-center w-20 h-20 rounded-full bg-red-600 shadow-2xl active:bg-red-700 select-none touch-none"
+        className="relative flex items-center justify-center w-20 h-20 rounded-full bg-danger shadow-glow-danger active:bg-danger select-none touch-none"
         onPointerDown={startHold}
         onPointerUp={cancelHold}
         onPointerLeave={cancelHold}
@@ -224,7 +224,7 @@ export default function SOSButton() {
 
         {/* Pulse ring when not holding */}
         {!holding && (
-          <span className="absolute inset-0 rounded-full border-2 border-red-400 animate-ping opacity-30" />
+          <span className="absolute inset-0 rounded-full border-2 border-danger animate-ping opacity-30" />
         )}
       </button>
     </div>

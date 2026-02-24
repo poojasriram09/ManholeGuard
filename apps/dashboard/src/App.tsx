@@ -18,6 +18,8 @@ import GrievancesPage from './pages/GrievancesPage';
 import AuditLogPage from './pages/AuditLogPage';
 import SettingsPage from './pages/SettingsPage';
 
+const ALLOWED_ROLES = ['ADMIN', 'SUPERVISOR'];
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);
   const loading = useAuthStore((s) => s.loading);
@@ -38,6 +40,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
+  if (!ALLOWED_ROLES.includes(user.role)) return <Navigate to="/login?error=unauthorized" replace />;
   return <>{children}</>;
 }
 

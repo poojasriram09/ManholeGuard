@@ -10,8 +10,10 @@ const controller = new GrievanceController();
 // Public routes - no auth required
 router.post('/grievance', validate(grievanceCreateSchema), controller.submit);
 router.get('/grievance/:code', controller.track);
+router.get('/heatmap', controller.getPublicHeatmap);
+router.get('/grievances', controller.getGrievances);
 
-// Protected route
-router.get('/heatmap', authenticate, controller.getHeatmap);
+// Protected routes - auth required (used by dashboard)
+router.put('/grievances/:id/status', authenticate, controller.updateStatus);
 
 export default router;

@@ -19,7 +19,7 @@ export default function ExitButton({ entryId, onExit }: ExitButtonProps) {
       <button
         type="button"
         onClick={() => setShowConfirm(true)}
-        className="w-full bg-blue-600 active:bg-blue-700 text-white rounded-2xl py-5 text-xl font-bold shadow-lg transition-colors"
+        className="w-full btn-primary active:bg-accent rounded-2xl py-5 text-xl font-bold shadow-card transition-colors"
         aria-label={`Exit manhole entry ${entryId}`}
       >
         Exit Manhole
@@ -33,8 +33,8 @@ export default function ExitButton({ entryId, onExit }: ExitButtonProps) {
           aria-modal="true"
           aria-labelledby="exit-confirm-title"
         >
-          <div className="w-full max-w-md bg-white rounded-t-3xl p-6 pb-8 animate-slide-up">
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6" />
+          <div className="w-full max-w-md bg-surface-card rounded-t-3xl border-t border-border p-6 pb-8 animate-slide-up">
+            <div className="w-12 h-1.5 bg-text-muted rounded-full mx-auto mb-6" />
 
             <h2
               id="exit-confirm-title"
@@ -42,7 +42,7 @@ export default function ExitButton({ entryId, onExit }: ExitButtonProps) {
             >
               Confirm Exit
             </h2>
-            <p className="text-gray-500 text-center mb-8 text-sm">
+            <p className="text-text-secondary text-center mb-8 text-sm">
               Are you sure you want to exit the manhole?
               A health check will follow.
             </p>
@@ -51,7 +51,7 @@ export default function ExitButton({ entryId, onExit }: ExitButtonProps) {
             <button
               type="button"
               onClick={handleConfirmExit}
-              className="w-full bg-green-600 active:bg-green-700 text-white rounded-2xl py-5 text-xl font-bold shadow-md transition-colors mb-3"
+              className="w-full bg-safe active:bg-safe text-white rounded-2xl py-5 text-xl font-bold shadow-md transition-colors mb-3"
             >
               Confirm Exit
             </button>
@@ -60,7 +60,7 @@ export default function ExitButton({ entryId, onExit }: ExitButtonProps) {
             <button
               type="button"
               onClick={() => setShowConfirm(false)}
-              className="w-full bg-gray-100 active:bg-gray-200 text-gray-700 rounded-2xl py-4 text-lg font-semibold transition-colors"
+              className="w-full bg-surface-elevated active:bg-surface-hover text-text-secondary rounded-2xl py-4 text-lg font-semibold transition-colors"
             >
               Cancel
             </button>

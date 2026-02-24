@@ -5,18 +5,18 @@ import PublicHeatmapPage from './pages/PublicHeatmapPage';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-700 text-white py-4 px-6">
+    <div className="min-h-screen bg-surface-base bg-grid">
+      <header className="glass border-b border-border text-text-primary py-4 px-6">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold">ManholeGuard</h1>
+          <h1 className="text-xl font-bold font-heading">ManholeGuard</h1>
           <nav className="flex gap-4 text-sm">
-            <a href="/" className="hover:underline">Report</a>
-            <a href="/track" className="hover:underline">Track</a>
-            <a href="/heatmap" className="hover:underline">Map</a>
+            <a href="/" className="text-text-secondary hover:text-text-primary transition-colors">Report</a>
+            <a href="/track" className="text-text-secondary hover:text-text-primary transition-colors">Track</a>
+            <a href="/heatmap" className="text-text-secondary hover:text-text-primary transition-colors">Map</a>
           </nav>
         </div>
       </header>
-      <main className="max-w-3xl mx-auto p-6">
+      <main className="max-w-3xl mx-auto p-6 animate-fade-in-up">
         <Routes>
           <Route path="/" element={<ReportIssuePage />} />
           <Route path="/track" element={<TrackStatusPage />} />

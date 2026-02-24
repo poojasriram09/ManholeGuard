@@ -113,13 +113,13 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
       {/* Scanner viewport */}
       <div
         id={SCANNER_ELEMENT_ID}
-        className="w-full min-h-[300px] bg-gray-900"
+        className="w-full min-h-[300px] bg-surface"
       />
 
       {/* Controls */}
-      <div className="p-4 bg-gray-900">
+      <div className="p-4 bg-surface">
         {cameraError && (
-          <div className="bg-red-900/50 border border-red-700 text-red-200 rounded-xl p-3 mb-3 text-sm text-center">
+          <div className="bg-danger-muted border border-danger/30 text-danger rounded-xl p-3 mb-3 text-sm text-center">
             {cameraError}
           </div>
         )}
@@ -128,7 +128,7 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
           <button
             type="button"
             onClick={startScanner}
-            className="w-full bg-blue-600 active:bg-blue-700 text-white rounded-2xl py-5 text-lg font-bold transition-colors flex items-center justify-center gap-3"
+            className="w-full btn-primary active:bg-accent text-white rounded-2xl py-5 text-lg font-bold transition-colors flex items-center justify-center gap-3"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 9V5a2 2 0 012-2h4M15 3h4a2 2 0 012 2v4M21 15v4a2 2 0 01-2 2h-4M9 21H5a2 2 0 01-2-2v-4" />
@@ -139,13 +139,13 @@ export default function QRScanner({ onScan, onError }: QRScannerProps) {
           <button
             type="button"
             onClick={stopScanner}
-            className="w-full bg-gray-600 active:bg-gray-700 text-white rounded-2xl py-5 text-lg font-bold transition-colors"
+            className="w-full bg-surface-elevated active:bg-surface-hover text-white rounded-2xl py-5 text-lg font-bold transition-colors"
           >
             Stop Scanner
           </button>
         )}
 
-        <p className="text-gray-400 text-xs text-center mt-3">
+        <p className="text-text-muted text-xs text-center mt-3">
           Point camera at the manhole QR code
         </p>
       </div>

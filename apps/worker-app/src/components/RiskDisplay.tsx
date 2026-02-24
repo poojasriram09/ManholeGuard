@@ -39,39 +39,39 @@ const FACTOR_LABELS: Record<keyof RiskFactors, string> = {
 
 const LEVEL_CONFIG = {
   SAFE: {
-    ringColor: 'text-green-500',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
+    ringColor: 'text-safe',
+    bgColor: 'bg-safe-muted',
+    borderColor: 'border-safe/20',
     label: 'Safe for Entry',
-    trackColor: 'stroke-green-500',
+    trackColor: 'stroke-safe',
   },
   CAUTION: {
-    ringColor: 'text-yellow-500',
-    bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-200',
+    ringColor: 'text-caution',
+    bgColor: 'bg-caution-muted',
+    borderColor: 'border-caution/20',
     label: 'Caution Required',
-    trackColor: 'stroke-yellow-500',
+    trackColor: 'stroke-caution',
   },
   PROHIBITED: {
-    ringColor: 'text-red-500',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
+    ringColor: 'text-danger',
+    bgColor: 'bg-danger-muted',
+    borderColor: 'border-danger/20',
     label: 'Entry Prohibited',
-    trackColor: 'stroke-red-500',
+    trackColor: 'stroke-danger',
   },
 } as const;
 
 function getBarColor(value: number): string {
-  if (value < 30) return 'bg-green-500';
-  if (value < 60) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (value < 30) return 'bg-safe';
+  if (value < 60) return 'bg-caution';
+  return 'bg-danger';
 }
 
 export default function RiskDisplay({ risk }: RiskDisplayProps) {
   if (!risk) {
     return (
-      <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 text-center">
-        <p className="text-gray-400 text-lg">No risk data available</p>
+      <div className="bg-surface-elevated border-2 border-border rounded-2xl p-6 text-center">
+        <p className="text-text-muted text-lg">No risk data available</p>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export default function RiskDisplay({ risk }: RiskDisplayProps) {
               cy="60"
               r="54"
               fill="none"
-              stroke="#e5e7eb"
+              stroke="#1e293b"
               strokeWidth="8"
             />
             <circle
@@ -122,14 +122,14 @@ export default function RiskDisplay({ risk }: RiskDisplayProps) {
             <span className={`text-4xl font-bold font-mono ${config.ringColor}`}>
               {Math.round(risk.riskScore)}
             </span>
-            <span className="text-xs text-gray-500 uppercase tracking-wide">/ 100</span>
+            <span className="text-xs text-text-muted uppercase tracking-wide">/ 100</span>
           </div>
         </div>
 
         <div className={`mt-3 px-5 py-2 rounded-full text-sm font-bold uppercase tracking-wider ${
-          risk.riskLevel === 'SAFE' ? 'bg-green-500 text-white' :
-          risk.riskLevel === 'CAUTION' ? 'bg-yellow-500 text-white' :
-          'bg-red-500 text-white'
+          risk.riskLevel === 'SAFE' ? 'bg-safe text-white' :
+          risk.riskLevel === 'CAUTION' ? 'bg-caution text-white' :
+          'bg-danger text-white'
         }`}>
           {config.label}
         </div>
@@ -137,18 +137,18 @@ export default function RiskDisplay({ risk }: RiskDisplayProps) {
 
       {/* Factor Breakdown */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide">
           Risk Factors
         </h3>
         {weightedFactors.map(({ key, label, rawValue, weight, weighted }) => (
           <div key={key}>
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm text-gray-700">{label}</span>
-              <span className="text-xs text-gray-500 font-mono">
+              <span className="text-sm text-text-primary">{label}</span>
+              <span className="text-xs text-text-muted font-mono">
                 {rawValue.toFixed(0)} x {weight} = {weighted.toFixed(1)}
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="w-full bg-surface-elevated rounded-full h-2.5">
               <div
                 className={`h-2.5 rounded-full transition-all duration-500 ${getBarColor(rawValue)}`}
                 style={{ width: `${Math.min(100, rawValue)}%` }}

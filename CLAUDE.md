@@ -8,7 +8,7 @@ ManholeGuard is a predictive, QR-based digital safety system protecting sanitati
 
 ## Repository State
 
-Fully implemented Turborepo monorepo. All free-tier deployment: Firebase Auth (Spark) + Firebase Hosting (Spark) + Render (free) + Supabase PostgreSQL (free) + cron-job.org (free).
+Fully implemented and verified Turborepo monorepo. All 6 packages build (zero TS errors), all 4 dev servers start, API connects to Supabase, all public + cron endpoints tested. All free-tier deployment: Firebase Auth (Spark) + Firebase Hosting (Spark) + Render (free) + Supabase PostgreSQL (free) + cron-job.org (free).
 
 ## Tech Stack
 
@@ -16,8 +16,8 @@ Fully implemented Turborepo monorepo. All free-tier deployment: Firebase Auth (S
 - **Backend** (`apps/api/`): Express.js 4.x + TypeScript (strict) + Prisma 5.x + PostgreSQL 15 (Supabase) + Zod validation, hosted on Render (free)
 - **Auth**: Firebase Authentication (Email/Password + Google sign-in) — backend verifies Firebase ID tokens, maps to Prisma UUIDs
 - **Dashboard** (`apps/dashboard/`): React 18 + Vite + TypeScript + Tailwind + Zustand + TanStack Query + Recharts + Leaflet — **Dark industrial command center theme** (Google Fonts: Outfit/DM Sans/JetBrains Mono, CSS custom properties design system, glassmorphic sidebar, safety color glow effects, 13 CSS keyframe animations)
-- **Worker App** (`apps/worker-app/`): React PWA + html5-qrcode + Dexie.js (IndexedDB) + Service Worker + Web Push
-- **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth)
+- **Worker App** (`apps/worker-app/`): React PWA + html5-qrcode + Dexie.js (IndexedDB) + Service Worker + Web Push — **Dark industrial theme** (same design system as dashboard: Google Fonts, CSS custom properties, safety color tokens, CartoDB dark maps)
+- **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth) — **Dark industrial theme** (glassmorphic header, dark forms, CartoDB dark map tiles)
 - **Shared** (`packages/shared/`): TypeScript types, constants, i18n translations (6 languages)
 - **Offline Sync** (`packages/offline-sync/`): Shared offline sync logic
 - **Hosting**: Firebase Hosting Spark plan (3 targets: dashboard, worker-app, citizen-portal)
@@ -119,6 +119,8 @@ All phases complete. Firebase migration done. Database live on Supabase with see
 | 9 | Compliance reports + audit trail | Done |
 | 10 | Deployment config | Done (Firebase Hosting + Render + cron-job.org) |
 | 11 | Dashboard UI Overhaul — "Industrial Command Center" | Done (~70 files, pure visual, zero logic changes) |
+| 12 | Full integration verification + bug fixes | Done — all servers verified, public API routes fixed, RBAC added |
+| 13 | Uniform Dark Theme — Worker App & Citizen Portal | Done (~30 files, pure visual, zero logic changes) |
 
 ### Configuration Status
 
@@ -134,13 +136,28 @@ All phases complete. Firebase migration done. Database live on Supabase with see
 | Render deployment | Configured (render.yaml) — not yet deployed |
 | cron-job.org | Configured (cron.routes.ts) — not yet set up |
 
-### What's Needed to Complete
+### Verified Working (2026-02-20)
 
-1. **Verify login flow** — test dashboard login at http://localhost:3000 with `admin@manholeguard.in` / `password123` (user must exist in both Firebase Auth and Prisma seed data).
-2. **Supabase Service Role Key** — optional, needed for Realtime features. Get from Supabase dashboard → Settings → API.
-3. **Deploy to Render** — push to GitHub, connect repo in Render dashboard, set env vars.
-4. **Deploy to Firebase Hosting** — `npm run deploy:hosting` after building frontends.
-5. **Set up cron-job.org** — create 5 jobs pointing to Render API URL with `x-cron-secret` header.
+All servers tested and confirmed operational:
+- `GET /health` → 200 OK
+- `GET /api/public/heatmap` → 40 manholes (public, no auth)
+- `GET /api/public/grievances` → 5 grievances (public, no auth)
+- `POST /api/public/grievance` → Creates with tracking code (e.g. `MHG-2026-L8E6J`)
+- `GET /api/public/grievance/:code` → Returns grievance by tracking code
+- `POST /api/cron/timer-monitor` → 200 (with `x-cron-secret` header)
+- `POST /api/cron/risk-recalculation` → 200
+- `POST /api/cron/maintenance` → 200
+- `POST /api/cron/weather-alert` → 200
+- `POST /api/cron/certification-expiry` → 200
+- Protected routes → 401 without auth
+- Cron routes → 403 without secret
+
+### What's Needed to Deploy
+
+1. **Deploy to Render** — push to GitHub, connect repo in Render dashboard, set env vars.
+2. **Deploy to Firebase Hosting** — `npm run deploy:hosting` after building frontends.
+3. **Set up cron-job.org** — create 5 jobs pointing to Render API URL with `x-cron-secret` header.
+4. **Supabase Service Role Key** — optional, needed for Realtime features. Get from Supabase dashboard → Settings → API.
 
 ### Dashboard UI Overhaul (Phase 11)
 
@@ -171,8 +188,40 @@ Complete visual transformation of `apps/dashboard/` from generic light-themed CR
 
 **Google Fonts loaded via CDN** in `index.html` (preconnect + stylesheet). Zero new npm dependencies.
 
+### Uniform Dark Theme — Worker App & Citizen Portal (Phase 13)
+
+Extended the dashboard's dark industrial design system to `apps/worker-app/` and `apps/citizen-portal/` for a uniform look across the entire platform. **Zero logic changes, zero new npm dependencies.** ~30 files modified.
+
+**Design System Foundation** (copied to both apps):
+- `tailwind.config.js`: Full extended theme (colors, fonts, shadows, animations, border-radius). Worker app retains `prohibited` alias for backward compat.
+- `index.css`: Complete design system (50+ CSS custom properties, `@layer base/components`, 13 keyframes, Leaflet dark overrides, dark scrollbar, `prefers-reduced-motion`).
+- `index.html`: Google Fonts CDN (Outfit, DM Sans, JetBrains Mono), `theme-color: #0a0e17`.
+- Worker app `manifest.json` + `offline.html`: Updated to dark theme colors.
+
+**Worker App** (9 pages + 14 components):
+- Pages: LoginPage (card-surface, input-dark, btn-primary), ScanPage (safety color risk badges), ChecklistPage (safe/border tokens), ActiveSessionPage (dark progress bar), CheckInPage (safe-colored OK button), HealthCheckPage (dark symptom cards), SOSPage (danger glow effects), HistoryPage (card-surface entries)
+- Components: RiskDisplay, EntryTimer, AlertBanner, GeoFenceStatus, ExitButton, GasReadingDisplay, QRScanner, FatigueBanner, OfflineIndicator, LanguageSwitcher, CheckInPrompt, HealthCheckForm, PPEChecklist, SOSButton — all converted from hardcoded Tailwind colors to design system tokens
+
+**Citizen Portal** (4 files):
+- App.tsx: Glassmorphic header (`.glass border-b border-border`), `bg-surface-base bg-grid` body
+- ReportIssuePage: `input-dark` forms, `btn-primary` submit, CartoDB dark map tiles
+- TrackStatusPage: `card-surface` result, dark timeline (accent active / surface-elevated inactive), safety color status badges
+- PublicHeatmapPage: Safety-color summary cards, CartoDB dark map tiles, updated RISK_COLORS hex values to match design tokens
+
+**Map Tiles**: Both citizen portal maps switched from OSM light tiles to CartoDB dark tiles (`dark_all`).
+
+### Role-Based Access Control
+- **Dashboard**: Restricted to `ADMIN` and `SUPERVISOR` roles only. `ProtectedRoute` in `App.tsx` checks `user.role` against `['ADMIN', 'SUPERVISOR']`. Workers redirected to login with "Access denied" message advising use of Worker App.
+- **Worker App**: For `WORKER` role accounts. Uses Firebase Auth with backend sync.
+- **Citizen Portal**: No auth required — fully public.
+
 ### Bug Fixes Applied
 - **Login redirect race condition** (dashboard): `LoginPage` was calling `navigate('/')` immediately after `signInWithEmailAndPassword`, before `onAuthStateChanged` → `/auth/sync` had completed. Fixed by using `useEffect` on `user` state to redirect only after sync finishes.
+- **Public heatmap returning wrong data**: `GET /api/public/heatmap` was calling `grievanceService.getAll()` (returning grievances) instead of `manholeService.getHeatmapData()` (returning manholes with risk data). Also required auth when it should be public. Fixed: now returns 40 manholes with `id`, `latitude`, `longitude`, `area`, `riskLevel`, `riskScore`, `qrCodeId`, `hasGasSensor`.
+- **Missing public grievances endpoint**: `GET /api/public/grievances` did not exist. Added to `grievance.routes.ts` — returns all grievances (used by citizen portal heatmap overlay and dashboard grievances page).
+- **Missing grievance status update endpoint**: `PUT /api/public/grievances/:id/status` did not exist. Added with `authenticate` middleware (used by dashboard to resolve/update grievance status).
+- **Missing citizen portal dev env**: Created `apps/citizen-portal/.env.development` with `VITE_API_URL=http://localhost:4000/api`.
+- **PWA icon references**: Manifest and service worker referenced non-existent PNG icons. Created SVG icons and updated references.
 
 ### Deployment Architecture (all free tier)
 - **Firebase Auth** (Spark plan, free): Email/Password + Google sign-in. `firebaseUid` field on User model. Auth middleware verifies Firebase ID tokens and maps to Prisma UUIDs — zero changes to 30+ services.

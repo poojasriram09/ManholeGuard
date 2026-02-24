@@ -24,11 +24,11 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>;
+    return <div className="min-h-screen flex items-center justify-center bg-surface-base"><p className="text-text-muted">Loading...</p></div>;
   }
 
   return (
-    <div className="min-h-screen max-w-md mx-auto">
+    <div className="min-h-screen max-w-md mx-auto bg-surface-base bg-grid">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={user ? <ScanPage /> : <Navigate to="/login" />} />

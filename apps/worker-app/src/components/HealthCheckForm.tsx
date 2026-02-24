@@ -54,15 +54,15 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold mb-1">Post-Exit Health Check</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="text-xl font-bold text-text-primary font-heading mb-1">Post-Exit Health Check</h2>
+        <p className="text-sm text-text-secondary">
           Please report how you are feeling after this entry.
         </p>
       </div>
 
       {/* Feeling OK Toggle */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <label className="block text-sm font-semibold text-text-secondary mb-3">
           Are you feeling okay?
         </label>
         <div className="grid grid-cols-2 gap-3">
@@ -75,8 +75,8 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
             }}
             className={`py-5 rounded-2xl text-lg font-bold transition-colors border-2 ${
               feelingOk === true
-                ? 'bg-green-500 border-green-500 text-white'
-                : 'bg-white border-gray-200 text-gray-700 active:bg-gray-50'
+                ? 'bg-safe border-safe text-white'
+                : 'bg-surface-card border-border text-text-primary active:bg-surface-hover'
             }`}
           >
             Yes
@@ -86,8 +86,8 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
             onClick={() => setFeelingOk(false)}
             className={`py-5 rounded-2xl text-lg font-bold transition-colors border-2 ${
               feelingOk === false
-                ? 'bg-red-500 border-red-500 text-white'
-                : 'bg-white border-gray-200 text-gray-700 active:bg-gray-50'
+                ? 'bg-danger border-danger text-white'
+                : 'bg-surface-card border-border text-text-primary active:bg-surface-hover'
             }`}
           >
             No
@@ -98,7 +98,7 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
       {/* Symptoms Checkboxes -- shown when not feeling ok */}
       {feelingOk === false && (
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+          <label className="block text-sm font-semibold text-text-secondary mb-3">
             Select any symptoms you are experiencing:
           </label>
           <div className="space-y-2">
@@ -111,15 +111,15 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
                   onClick={() => toggleSymptom(symptom.id)}
                   className={`w-full flex items-center p-4 rounded-xl border-2 transition-colors ${
                     isSelected
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-200 bg-white active:bg-gray-50'
+                      ? 'border-danger bg-danger-muted'
+                      : 'border-border bg-surface-card active:bg-surface-hover'
                   }`}
                 >
                   <div
                     className={`w-7 h-7 rounded border-2 flex items-center justify-center mr-3 flex-shrink-0 ${
                       isSelected
-                        ? 'bg-red-500 border-red-500 text-white'
-                        : 'border-gray-300'
+                        ? 'bg-danger border-danger text-white'
+                        : 'border-text-muted'
                     }`}
                   >
                     {isSelected && (
@@ -128,7 +128,7 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
                       </svg>
                     )}
                   </div>
-                  <span className="text-sm font-medium">{symptom.label}</span>
+                  <span className="text-sm font-medium text-text-primary">{symptom.label}</span>
                 </button>
               );
             })}
@@ -138,7 +138,7 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
 
       {/* Notes Textarea */}
       <div>
-        <label htmlFor="health-notes" className="block text-sm font-semibold text-gray-700 mb-2">
+        <label htmlFor="health-notes" className="block text-sm font-semibold text-text-secondary mb-2">
           Additional Notes
         </label>
         <textarea
@@ -147,7 +147,7 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Describe any other symptoms or concerns..."
           rows={3}
-          className="w-full border-2 border-gray-200 rounded-xl p-4 text-sm resize-none focus:outline-none focus:border-blue-400 transition-colors"
+          className="w-full input-dark text-sm resize-none"
         />
       </div>
 
@@ -158,15 +158,15 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
           onClick={() => setNeedsMedical((prev) => !prev)}
           className={`w-full flex items-center p-4 rounded-xl border-2 transition-colors ${
             needsMedical
-              ? 'border-red-500 bg-red-50'
-              : 'border-gray-200 bg-white active:bg-gray-50'
+              ? 'border-danger bg-danger-muted'
+              : 'border-border bg-surface-card active:bg-surface-hover'
           }`}
         >
           <div
             className={`w-7 h-7 rounded border-2 flex items-center justify-center mr-3 flex-shrink-0 ${
               needsMedical
-                ? 'bg-red-500 border-red-500 text-white'
-                : 'border-gray-300'
+                ? 'bg-danger border-danger text-white'
+                : 'border-text-muted'
             }`}
           >
             {needsMedical && (
@@ -176,8 +176,8 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
             )}
           </div>
           <div className="text-left">
-            <span className="text-sm font-semibold text-red-700">I need medical attention</span>
-            <p className="text-xs text-red-500 mt-0.5">This will alert your supervisor immediately</p>
+            <span className="text-sm font-semibold text-danger">I need medical attention</span>
+            <p className="text-xs text-danger mt-0.5">This will alert your supervisor immediately</p>
           </div>
         </button>
       )}
@@ -189,8 +189,8 @@ export default function HealthCheckForm({ entryId, workerId, onSubmit }: HealthC
         disabled={!canSubmit}
         className={`w-full rounded-2xl py-5 text-xl font-bold transition-colors ${
           canSubmit
-            ? 'bg-blue-600 active:bg-blue-700 text-white shadow-lg'
-            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            ? 'btn-primary active:bg-accent shadow-card'
+            : 'bg-surface-elevated text-text-muted cursor-not-allowed'
         }`}
       >
         Submit Health Check

@@ -64,9 +64,9 @@ export default function LanguageSwitcher() {
         onClick={() => setIsOpen((prev) => !prev)}
         className="
           flex items-center gap-2 px-3 py-2.5 min-h-[48px]
-          bg-gray-800 border border-gray-600 rounded-lg
-          text-gray-200 text-sm font-medium
-          hover:bg-gray-700 active:bg-gray-600
+          bg-surface-card border border-border rounded-lg
+          text-text-primary text-sm font-medium
+          hover:bg-surface-hover active:bg-surface-hover
           transition-colors duration-150
           select-none touch-none
         "
@@ -75,7 +75,7 @@ export default function LanguageSwitcher() {
         aria-label={`Language: ${currentLang.nativeName}`}
       >
         <svg
-          className="w-4 h-4 text-gray-400 flex-shrink-0"
+          className="w-4 h-4 text-text-muted flex-shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -89,7 +89,7 @@ export default function LanguageSwitcher() {
         </svg>
         <span>{currentLang.nativeName}</span>
         <svg
-          className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-3.5 h-3.5 text-text-muted transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -104,7 +104,7 @@ export default function LanguageSwitcher() {
         <div
           className="
             absolute right-0 mt-1 w-52 py-1
-            bg-gray-800 border border-gray-600 rounded-lg shadow-2xl
+            bg-surface-card border border-border rounded-lg shadow-card-hover
             z-50 overflow-hidden
           "
           role="listbox"
@@ -124,18 +124,18 @@ export default function LanguageSwitcher() {
                   px-4 py-3 min-h-[48px] text-left
                   transition-colors duration-100
                   ${isSelected
-                    ? 'bg-blue-900/40 text-blue-300'
-                    : 'text-gray-200 hover:bg-gray-700 active:bg-gray-600'
+                    ? 'bg-accent-muted text-accent-strong'
+                    : 'text-text-primary hover:bg-surface-hover active:bg-surface-hover'
                   }
                 `}
               >
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{lang.nativeName}</span>
-                  <span className="text-xs text-gray-500">{lang.name}</span>
+                  <span className="text-xs text-text-muted">{lang.name}</span>
                 </div>
                 {isSelected && (
                   <svg
-                    className="w-4 h-4 text-blue-400 flex-shrink-0"
+                    className="w-4 h-4 text-accent-strong flex-shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

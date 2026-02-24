@@ -50,7 +50,7 @@ export class ManholeService {
     return prisma.manhole.findMany({
       select: {
         id: true, latitude: true, longitude: true, area: true,
-        riskLevel: true, riskScore: true, qrCodeId: true,
+        riskLevel: true, riskScore: true, qrCodeId: true, hasGasSensor: true,
       },
     });
   }

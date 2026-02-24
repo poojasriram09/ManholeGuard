@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { useAuthStore } from '../store/authStore';
+
+const ALLOWED_ROLES = ['ADMIN', 'SUPERVISOR'];
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,11 +12,21 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Show unauthorized error if redirected from ProtectedRoute
+  useEffect(() => {
+    if (searchParams.get('error') === 'unauthorized') {
+      setError('Access denied. The dashboard is for Admins and Supervisors only. Workers should use the Worker App.');
+      logout();
+    }
+  }, [searchParams, logout]);
 
   // Redirect when user is set (after onAuthStateChanged + sync completes)
   useEffect(() => {
-    if (user) {
+    if (user && ALLOWED_ROLES.includes(user.role)) {
       navigate('/', { replace: true });
     }
   }, [user, navigate]);

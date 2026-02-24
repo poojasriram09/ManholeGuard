@@ -133,22 +133,22 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
   // Progress bar color
   const progressColor =
     progressPercent >= 100
-      ? 'bg-green-500'
+      ? 'bg-safe'
       : progressPercent >= 50
-        ? 'bg-yellow-500'
-        : 'bg-red-500';
+        ? 'bg-caution'
+        : 'bg-danger';
 
   return (
-    <div className="bg-gray-900 rounded-xl border border-gray-700 overflow-hidden">
+    <div className="bg-surface rounded-xl border border-border overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 bg-gray-800 border-b border-gray-700">
+      <div className="px-4 py-3 bg-surface-card border-b border-border">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-white font-bold text-base">
             {t('checklist.title')}
           </h3>
           <span
             className={`text-sm font-bold ${
-              allChecked ? 'text-green-400' : 'text-gray-400'
+              allChecked ? 'text-safe' : 'text-text-muted'
             }`}
           >
             {completedCount}/{TOTAL_ITEMS}
@@ -156,20 +156,20 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
         </div>
 
         {/* Progress bar */}
-        <div className="relative h-2 bg-gray-700 rounded-full overflow-hidden">
+        <div className="relative h-2 bg-surface-elevated rounded-full overflow-hidden">
           <div
             className={`absolute inset-y-0 left-0 rounded-full transition-all duration-300 ${progressColor}`}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
-        <p className="text-xs text-gray-500 mt-1.5">
+        <p className="text-xs text-text-muted mt-1.5">
           {t('checklist.allRequired')}
         </p>
       </div>
 
       {/* Checklist items */}
-      <div className="divide-y divide-gray-800">
+      <div className="divide-y divide-border">
         {PPE_ITEMS.map((item) => {
           const isChecked = checkedItems[item.id];
           return (
@@ -184,8 +184,8 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
                 transition-colors duration-150 select-none touch-none
                 disabled:opacity-50 disabled:cursor-not-allowed
                 ${isChecked
-                  ? 'bg-green-900/20'
-                  : 'bg-gray-900 hover:bg-gray-800 active:bg-gray-750'
+                  ? 'bg-safe-muted'
+                  : 'bg-surface hover:bg-surface-hover active:bg-surface-hover'
                 }
               `}
               role="checkbox"
@@ -199,8 +199,8 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
                   w-8 h-8 rounded-lg border-2
                   transition-all duration-150
                   ${isChecked
-                    ? 'bg-green-600 border-green-600'
-                    : 'bg-transparent border-gray-600'
+                    ? 'bg-safe border-safe'
+                    : 'bg-transparent border-text-muted'
                   }
                 `}
               >
@@ -218,7 +218,7 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
               </div>
 
               {/* Icon */}
-              <div className={`flex-shrink-0 ${isChecked ? 'text-green-400' : 'text-gray-500'}`}>
+              <div className={`flex-shrink-0 ${isChecked ? 'text-safe' : 'text-text-muted'}`}>
                 <PPEIcon type={item.icon} />
               </div>
 
@@ -226,7 +226,7 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
               <span
                 className={`
                   text-sm font-medium text-left flex-1
-                  ${isChecked ? 'text-green-300 line-through' : 'text-gray-200'}
+                  ${isChecked ? 'text-safe line-through' : 'text-text-primary'}
                 `}
               >
                 {item.label}
@@ -237,7 +237,7 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
       </div>
 
       {/* Submit button */}
-      <div className="px-4 py-4 bg-gray-800 border-t border-gray-700">
+      <div className="px-4 py-4 bg-surface-card border-t border-border">
         <button
           type="button"
           onClick={handleSubmit}
@@ -248,8 +248,8 @@ export default function PPEChecklist({ onComplete, disabled = false }: PPECheckl
             transition-all duration-150
             select-none touch-none
             ${allChecked && !disabled
-              ? 'bg-green-600 text-white hover:bg-green-500 active:bg-green-700 active:scale-[0.98]'
-              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+              ? 'bg-safe text-white hover:bg-safe active:bg-safe active:scale-[0.98]'
+              : 'bg-surface-elevated text-text-muted cursor-not-allowed'
             }
           `}
         >

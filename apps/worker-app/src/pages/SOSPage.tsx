@@ -44,18 +44,18 @@ export default function SOSPage() {
 
   if (triggered) {
     return (
-      <div className="min-h-screen bg-red-600 text-white p-6 text-center flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-danger text-white p-6 text-center flex flex-col items-center justify-center">
         <div className="text-6xl mb-4 animate-pulse">🚨</div>
-        <h1 className="text-3xl font-bold mb-4">SOS ACTIVATED</h1>
+        <h1 className="text-3xl font-bold font-heading mb-4">SOS ACTIVATED</h1>
         <p className="text-lg mb-6">Help is on the way</p>
         {sosData?.nearestHospital && (
-          <div className="bg-white/20 rounded-xl p-4 mb-4 w-full max-w-sm">
+          <div className="bg-surface-elevated border border-border rounded-xl p-4 mb-4 w-full max-w-sm">
             <p className="text-sm">Nearest Hospital</p>
             <p className="font-bold">{sosData.nearestHospital}</p>
             <p className="text-sm">{sosData.hospitalDistance} km away</p>
           </div>
         )}
-        <button onClick={() => navigate('/')} className="mt-6 bg-white text-red-600 rounded-xl px-8 py-3 font-semibold">
+        <button onClick={() => navigate('/')} className="mt-6 bg-surface-card text-danger rounded-xl px-8 py-3 font-semibold">
           Back to Home
         </button>
       </div>
@@ -63,22 +63,22 @@ export default function SOSPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-6">
-      <h1 className="text-2xl font-bold mb-2">Emergency SOS</h1>
-      <p className="text-gray-400 mb-8">Hold the button for 3 seconds</p>
+    <div className="min-h-screen bg-surface-base text-white flex flex-col items-center justify-center p-6">
+      <h1 className="text-2xl font-bold font-heading text-text-primary mb-2">Emergency SOS</h1>
+      <p className="text-text-muted mb-8">Hold the button for 3 seconds</p>
 
       <button
         onMouseDown={startHold} onMouseUp={endHold} onMouseLeave={endHold}
         onTouchStart={startHold} onTouchEnd={endHold}
-        className={`w-48 h-48 rounded-full font-bold text-3xl shadow-2xl transition-all ${
-          holding ? 'bg-red-700 scale-110' : 'bg-red-600 hover:bg-red-700'
+        className={`w-48 h-48 rounded-full font-bold text-3xl shadow-glow-danger transition-all ${
+          holding ? 'bg-danger scale-110' : 'bg-danger hover:brightness-110'
         }`}>
         SOS
       </button>
 
-      {holding && <p className="mt-6 text-yellow-400 animate-pulse">Keep holding...</p>}
+      {holding && <p className="mt-6 text-caution animate-pulse">Keep holding...</p>}
 
-      <button onClick={() => navigate(-1)} className="mt-12 text-gray-400 underline">Cancel</button>
+      <button onClick={() => navigate(-1)} className="mt-12 text-text-muted underline">Cancel</button>
     </div>
   );
 }

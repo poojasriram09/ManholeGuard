@@ -30,9 +30,9 @@ function getFatigueLevel(fraction: number): FatigueLevel {
 }
 
 const LEVEL_COLORS: Record<FatigueLevel, { bar: string; text: string; bg: string }> = {
-  green: { bar: 'bg-green-500', text: 'text-green-400', bg: 'bg-green-900/20' },
-  yellow: { bar: 'bg-yellow-500', text: 'text-yellow-400', bg: 'bg-yellow-900/20' },
-  red: { bar: 'bg-red-500', text: 'text-red-400', bg: 'bg-red-900/20' },
+  green: { bar: 'bg-safe', text: 'text-safe', bg: 'bg-safe-muted' },
+  yellow: { bar: 'bg-caution', text: 'text-caution', bg: 'bg-caution-muted' },
+  red: { bar: 'bg-danger', text: 'text-danger', bg: 'bg-danger-muted' },
 };
 
 export default function FatigueBanner({ shift }: FatigueBannerProps) {
@@ -93,21 +93,21 @@ export default function FatigueBanner({ shift }: FatigueBannerProps) {
 
   const borderColor =
     overallLevel === 'red'
-      ? 'border-red-600'
+      ? 'border-danger/30'
       : overallLevel === 'yellow'
-        ? 'border-yellow-600'
-        : 'border-green-700';
+        ? 'border-caution/30'
+        : 'border-safe/30';
 
   const headerBg =
     overallLevel === 'red'
-      ? 'bg-red-900/40'
+      ? 'bg-danger-muted'
       : overallLevel === 'yellow'
-        ? 'bg-yellow-900/30'
-        : 'bg-green-900/20';
+        ? 'bg-caution-muted'
+        : 'bg-safe-muted';
 
   return (
     <div
-      className={`rounded-xl bg-gray-900 border ${borderColor} overflow-hidden`}
+      className={`rounded-xl bg-surface border ${borderColor} overflow-hidden`}
       role="region"
       aria-label="Shift fatigue metrics"
     >
@@ -137,7 +137,7 @@ export default function FatigueBanner({ shift }: FatigueBannerProps) {
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          className="p-1 text-gray-500 hover:text-gray-300 rounded"
+          className="p-1 text-text-muted hover:text-text-primary rounded"
           aria-label={t('common.close')}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,14 +155,14 @@ export default function FatigueBanner({ shift }: FatigueBannerProps) {
           return (
             <div key={metric.label}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-gray-400">{metric.label}</span>
+                <span className="text-xs text-text-muted">{metric.label}</span>
                 <span className={`text-xs font-bold ${colors.text}`}>
                   {metric.displayValue}
                 </span>
               </div>
 
               {/* Progress bar */}
-              <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div className="relative h-2 bg-surface-card rounded-full overflow-hidden">
                 <div
                   className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ${colors.bar}`}
                   style={{ width: `${barWidth}%` }}
@@ -170,7 +170,7 @@ export default function FatigueBanner({ shift }: FatigueBannerProps) {
               </div>
 
               <div className="text-right mt-0.5">
-                <span className="text-[10px] text-gray-500">{metric.unit}</span>
+                <span className="text-[10px] text-text-muted">{metric.unit}</span>
               </div>
             </div>
           );
@@ -179,8 +179,8 @@ export default function FatigueBanner({ shift }: FatigueBannerProps) {
 
       {/* Limits exceeded warning */}
       {metrics.some((m) => m.current >= m.max) && (
-        <div className="px-4 py-2.5 bg-red-900/50 border-t border-red-800">
-          <p className="text-red-200 text-xs font-bold text-center">
+        <div className="px-4 py-2.5 bg-danger-muted border-t border-danger/30">
+          <p className="text-danger text-xs font-bold text-center">
             {shift.entryCount >= FATIGUE_LIMITS.MAX_ENTRIES_PER_SHIFT
               ? t('shift.maxEntriesReached')
               : t('shift.restRequired')}

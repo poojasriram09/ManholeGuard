@@ -69,27 +69,27 @@ export default function EntryTimer({ entryTime, allowedMinutes, onOverstay }: En
   const isWarning = remainingSeconds > 0 && remainingSeconds <= 300;
 
   const progressColor =
-    isOvertime ? 'bg-red-500' :
-    progress > 80 ? 'bg-red-500' :
-    progress > 60 ? 'bg-yellow-500' :
-    'bg-green-500';
+    isOvertime ? 'bg-danger' :
+    progress > 80 ? 'bg-danger' :
+    progress > 60 ? 'bg-caution' :
+    'bg-safe';
 
   const textColor =
-    isOvertime ? 'text-red-600' :
-    isWarning ? 'text-yellow-600' :
-    'text-gray-900';
+    isOvertime ? 'text-danger' :
+    isWarning ? 'text-caution' :
+    'text-text-primary';
 
-  const bgPulse = isOvertime ? 'animate-pulse bg-red-50' : '';
+  const bgPulse = isOvertime ? 'animate-pulse bg-danger-muted' : '';
 
   return (
     <div className={`rounded-2xl p-6 border-2 ${
-      isOvertime ? 'border-red-300 bg-red-50' :
-      isWarning ? 'border-yellow-300 bg-yellow-50' :
-      'border-gray-200 bg-white'
+      isOvertime ? 'border-danger/30 bg-danger-muted' :
+      isWarning ? 'border-caution/30 bg-caution-muted' :
+      'border-border bg-surface-card'
     } ${bgPulse}`}>
       {/* Timer Label */}
       <div className="text-center mb-2">
-        <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
+        <span className="text-sm font-semibold text-text-muted uppercase tracking-wide">
           {isOvertime ? 'Overtime' : 'Time Remaining'}
         </span>
       </div>
@@ -99,13 +99,13 @@ export default function EntryTimer({ entryTime, allowedMinutes, onOverstay }: En
         <span className={`text-7xl font-mono font-bold tabular-nums ${textColor}`}>
           {isOvertime && '-'}
           {String(displayMinutes).padStart(2, '0')}
-          <span className={isOvertime ? 'text-red-400' : 'text-gray-400'}>:</span>
+          <span className={isOvertime ? 'text-danger' : 'text-text-muted'}>:</span>
           {String(displaySeconds).padStart(2, '0')}
         </span>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-4 mb-2 overflow-hidden">
+      <div className="w-full bg-surface-elevated rounded-full h-4 mb-2 overflow-hidden">
         <div
           className={`h-4 rounded-full transition-all duration-1000 ease-linear ${progressColor}`}
           style={{ width: `${Math.min(100, progress)}%` }}
@@ -113,23 +113,23 @@ export default function EntryTimer({ entryTime, allowedMinutes, onOverstay }: En
       </div>
 
       {/* Footer Info */}
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-text-muted mt-1">
         <span>0 min</span>
         <span>Allowed: {allowedMinutes} min</span>
       </div>
 
       {/* Warning Message */}
       {isWarning && (
-        <div className="mt-4 bg-yellow-100 border border-yellow-300 rounded-xl p-3 text-center">
-          <p className="text-yellow-800 text-sm font-semibold">
+        <div className="mt-4 bg-caution-muted border border-caution/30 rounded-xl p-3 text-center">
+          <p className="text-caution text-sm font-semibold">
             Less than 5 minutes remaining. Prepare to exit.
           </p>
         </div>
       )}
 
       {isOvertime && (
-        <div className="mt-4 bg-red-100 border border-red-300 rounded-xl p-3 text-center">
-          <p className="text-red-800 text-sm font-bold">
+        <div className="mt-4 bg-danger-muted border border-danger/30 rounded-xl p-3 text-center">
+          <p className="text-danger text-sm font-bold">
             Time exceeded! Exit immediately.
           </p>
         </div>

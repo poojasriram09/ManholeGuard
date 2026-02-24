@@ -35,7 +35,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/icon-192.png',
+      icon: '/icon-192.svg',
       vibrate: [200, 100, 200],
       tag: data.tag || 'default',
     })

@@ -9,21 +9,21 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Entry History</h1>
+    <div className="p-4 animate-fade-in-up">
+      <h1 className="text-xl font-bold font-heading text-text-primary mb-4">Entry History</h1>
       <div className="space-y-3">
         {entries.map((e) => (
-          <div key={e.id} className="bg-white rounded-xl p-4 shadow">
+          <div key={e.id} className="card-surface p-4">
             <div className="flex justify-between">
-              <span className="font-medium text-sm">{e.manhole?.area}</span>
-              <span className={`text-xs px-2 py-1 rounded-full ${e.status === 'EXITED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+              <span className="text-text-primary font-medium text-sm">{e.manhole?.area}</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${e.status === 'EXITED' ? 'bg-safe-muted text-safe' : 'bg-caution-muted text-caution'}`}>
                 {e.status}
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">{new Date(e.entryTime).toLocaleString()}</p>
+            <p className="text-xs text-text-muted mt-1">{new Date(e.entryTime).toLocaleString()}</p>
           </div>
         ))}
-        {entries.length === 0 && <p className="text-center text-gray-400 py-10">No entries yet</p>}
+        {entries.length === 0 && <p className="text-center text-text-muted py-10">No entries yet</p>}
       </div>
     </div>
   );

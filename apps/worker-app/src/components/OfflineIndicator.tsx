@@ -14,8 +14,8 @@ export default function OfflineIndicator() {
         sticky top-0 z-40 flex items-center justify-between
         px-4 py-2 text-sm font-medium transition-colors duration-300
         ${isOnline
-          ? 'bg-gray-900 text-gray-300'
-          : 'bg-red-900 text-red-100'
+          ? 'bg-surface text-text-secondary'
+          : 'bg-danger-muted text-danger'
         }
       `}
       role="status"
@@ -26,7 +26,7 @@ export default function OfflineIndicator() {
         <span
           className={`
             inline-block w-2.5 h-2.5 rounded-full flex-shrink-0
-            ${isOnline ? 'bg-green-500' : 'bg-red-500 animate-pulse'}
+            ${isOnline ? 'bg-safe' : 'bg-danger animate-pulse'}
           `}
           aria-hidden="true"
         />
@@ -54,7 +54,7 @@ export default function OfflineIndicator() {
               inline-flex items-center justify-center
               min-w-[1.5rem] h-6 px-1.5
               rounded-full text-xs font-bold
-              ${isOnline ? 'bg-yellow-600 text-white' : 'bg-red-700 text-red-100'}
+              ${isOnline ? 'bg-caution text-white' : 'bg-danger text-text-primary'}
             `}
           >
             {pendingCount}

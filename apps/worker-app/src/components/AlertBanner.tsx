@@ -9,51 +9,51 @@ interface AlertBannerProps {
 
 const TYPE_CONFIG = {
   info: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-300',
-    text: 'text-blue-800',
+    bg: 'bg-accent-muted',
+    border: 'border-accent/30',
+    text: 'text-accent',
     icon: (
-      <svg className="w-6 h-6 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="w-6 h-6 text-accent flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <circle cx="12" cy="12" r="10" />
         <path d="M12 16v-4M12 8h.01" />
       </svg>
     ),
-    dismissBtn: 'text-blue-500 active:text-blue-700',
+    dismissBtn: 'text-accent active:text-accent',
   },
   warning: {
-    bg: 'bg-yellow-50',
-    border: 'border-yellow-300',
-    text: 'text-yellow-800',
+    bg: 'bg-caution-muted',
+    border: 'border-caution/30',
+    text: 'text-caution',
     icon: (
-      <svg className="w-6 h-6 text-yellow-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="w-6 h-6 text-caution flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path d="M12 9v4M12 17h.01M10.29 3.86l-8.6 14.86A2 2 0 003.44 22h17.12a2 2 0 001.75-3.28l-8.6-14.86a2 2 0 00-3.42 0z" />
       </svg>
     ),
-    dismissBtn: 'text-yellow-600 active:text-yellow-800',
+    dismissBtn: 'text-caution active:text-caution',
   },
   error: {
-    bg: 'bg-red-50',
-    border: 'border-red-300',
-    text: 'text-red-800',
+    bg: 'bg-danger-muted',
+    border: 'border-danger/30',
+    text: 'text-danger',
     icon: (
-      <svg className="w-6 h-6 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="w-6 h-6 text-danger flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <circle cx="12" cy="12" r="10" />
         <path d="M15 9l-6 6M9 9l6 6" />
       </svg>
     ),
-    dismissBtn: 'text-red-500 active:text-red-700',
+    dismissBtn: 'text-danger active:text-danger',
   },
   success: {
-    bg: 'bg-green-50',
-    border: 'border-green-300',
-    text: 'text-green-800',
+    bg: 'bg-safe-muted',
+    border: 'border-safe/30',
+    text: 'text-safe',
     icon: (
-      <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="w-6 h-6 text-safe flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <circle cx="12" cy="12" r="10" />
         <path d="M9 12l2 2 4-4" />
       </svg>
     ),
-    dismissBtn: 'text-green-500 active:text-green-700',
+    dismissBtn: 'text-safe active:text-safe',
   },
 } as const;
 

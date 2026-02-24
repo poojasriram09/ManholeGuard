@@ -39,7 +39,7 @@ export default function HealthCheckPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-600 text-white text-center">
+      <div className="min-h-screen flex items-center justify-center bg-safe text-white text-center">
         <div>
           <div className="text-6xl mb-4">✓</div>
           <h1 className="text-2xl font-bold">Health check recorded</h1>
@@ -50,28 +50,28 @@ export default function HealthCheckPage() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-2">Post-Exit Health Check</h1>
-      <p className="text-gray-500 mb-4">How are you feeling after this entry?</p>
+    <div className="p-4 animate-fade-in-up">
+      <h1 className="text-xl font-bold font-heading text-text-primary mb-2">Post-Exit Health Check</h1>
+      <p className="text-text-secondary mb-4">How are you feeling after this entry?</p>
 
       <div className="space-y-2 mb-6">
         {SYMPTOMS.map((s) => (
           <button key={s.id} onClick={() => toggle(s.id)}
             className={`w-full flex items-center p-4 rounded-xl border-2 ${
-              selected.includes(s.id) ? (s.serious ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50') : 'border-gray-200'
+              selected.includes(s.id) ? (s.serious ? 'border-danger bg-danger-muted' : 'border-safe bg-safe-muted') : 'border-border bg-surface-card'
             }`}>
             <div className={`w-6 h-6 rounded border-2 mr-3 flex items-center justify-center text-sm ${
-              selected.includes(s.id) ? (s.serious ? 'bg-red-500 border-red-500 text-white' : 'bg-green-500 border-green-500 text-white') : 'border-gray-300'
+              selected.includes(s.id) ? (s.serious ? 'bg-danger border-danger text-white' : 'bg-safe border-safe text-white') : 'border-text-muted'
             }`}>
               {selected.includes(s.id) && '✓'}
             </div>
-            <span className="text-sm">{s.label}</span>
-            {s.serious && <span className="ml-auto text-xs text-red-500">Serious</span>}
+            <span className="text-sm text-text-primary">{s.label}</span>
+            {s.serious && <span className="ml-auto text-xs text-danger">Serious</span>}
           </button>
         ))}
       </div>
 
-      <button onClick={handleSubmit} className="w-full bg-blue-600 text-white rounded-xl py-4 text-lg font-semibold">
+      <button onClick={handleSubmit} className="btn-primary w-full rounded-xl py-4 text-lg font-semibold">
         Submit Health Check
       </button>
     </div>

@@ -17,8 +17,8 @@ export default function GeoFenceStatus({ withinFence, distance, maxRadius }: Geo
     <div
       className={`rounded-2xl p-5 border-2 transition-colors ${
         withinFence
-          ? 'border-green-300 bg-green-50'
-          : 'border-red-300 bg-red-50'
+          ? 'border-safe/30 bg-safe-muted'
+          : 'border-danger/30 bg-danger-muted'
       }`}
       role="status"
       aria-label={withinFence ? 'Within geofence' : 'Outside geofence'}
@@ -26,7 +26,7 @@ export default function GeoFenceStatus({ withinFence, distance, maxRadius }: Geo
       <div className="flex items-center gap-4">
         {/* Status Icon */}
         <div className={`w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 ${
-          withinFence ? 'bg-green-500' : 'bg-red-500'
+          withinFence ? 'bg-safe' : 'bg-danger'
         }`}>
           {withinFence ? (
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -41,10 +41,10 @@ export default function GeoFenceStatus({ withinFence, distance, maxRadius }: Geo
 
         {/* Status Text */}
         <div className="flex-1 min-w-0">
-          <p className={`text-lg font-bold ${withinFence ? 'text-green-800' : 'text-red-800'}`}>
+          <p className={`text-lg font-bold ${withinFence ? 'text-safe' : 'text-danger'}`}>
             {withinFence ? 'Within Geofence' : 'Outside Geofence'}
           </p>
-          <p className={`text-sm ${withinFence ? 'text-green-600' : 'text-red-600'}`}>
+          <p className={`text-sm ${withinFence ? 'text-safe' : 'text-danger'}`}>
             Distance: <span className="font-mono font-semibold">{displayDistance}</span>
             {' '} / {maxRadius} m radius
           </p>
@@ -53,28 +53,28 @@ export default function GeoFenceStatus({ withinFence, distance, maxRadius }: Geo
 
       {/* Distance Bar */}
       <div className="mt-4">
-        <div className="w-full bg-gray-200 rounded-full h-2.5 relative overflow-hidden">
+        <div className="w-full bg-surface-elevated rounded-full h-2.5 relative overflow-hidden">
           <div
             className={`h-2.5 rounded-full transition-all duration-500 ${
-              withinFence ? 'bg-green-500' : 'bg-red-500'
+              withinFence ? 'bg-safe' : 'bg-danger'
             }`}
             style={{ width: `${Math.min(100, radiusUsage)}%` }}
           />
           {/* Threshold marker at 100% of radius */}
           <div
-            className="absolute top-0 h-full w-0.5 bg-gray-500"
+            className="absolute top-0 h-full w-0.5 bg-text-muted"
             style={{ left: '100%', transform: 'translateX(-1px)' }}
           />
         </div>
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
+        <div className="flex justify-between text-xs text-text-muted mt-1">
           <span>0 m</span>
           <span>{maxRadius} m</span>
         </div>
       </div>
 
       {!withinFence && (
-        <div className="mt-3 bg-red-100 border border-red-200 rounded-xl p-3">
-          <p className="text-red-700 text-sm font-semibold text-center">
+        <div className="mt-3 bg-danger-muted border border-danger/20 rounded-xl p-3">
+          <p className="text-danger text-sm font-semibold text-center">
             Move closer to the manhole to proceed. You are {Math.round(distance - maxRadius)} m outside the allowed zone.
           </p>
         </div>
