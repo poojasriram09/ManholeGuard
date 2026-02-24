@@ -17,7 +17,7 @@ Fully implemented and verified Turborepo monorepo. All 6 packages build (zero TS
 - **Auth**: Firebase Authentication (Email/Password + Google sign-in) — backend verifies Firebase ID tokens, maps to Prisma UUIDs
 - **Dashboard** (`apps/dashboard/`): React 18 + Vite + TypeScript + Tailwind + Zustand + TanStack Query + Recharts + Leaflet — **Dark industrial command center theme** (Google Fonts: Outfit/DM Sans/JetBrains Mono, CSS custom properties design system, glassmorphic sidebar, safety color glow effects, 13 CSS keyframe animations)
 - **Worker App** (`apps/worker-app/`): React PWA + html5-qrcode + Dexie.js (IndexedDB) + Service Worker + Web Push — **Dark industrial theme** (same design system as dashboard: Google Fonts, CSS custom properties, safety color tokens, CartoDB dark maps)
-- **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth) — **Dark industrial theme** (glassmorphic header, dark forms, CartoDB dark map tiles)
+- **Citizen Portal** (`apps/citizen-portal/`): Lightweight React SPA + Tailwind + Leaflet (no auth) — **Dark industrial theme** (glassmorphic header, dark forms, CartoDB dark map tiles, unified login portal at `/login`)
 - **Shared** (`packages/shared/`): TypeScript types, constants, i18n translations (6 languages)
 - **Offline Sync** (`packages/offline-sync/`): Shared offline sync logic
 - **Hosting**: Firebase Hosting Spark plan (3 targets: dashboard, worker-app, citizen-portal)
@@ -121,6 +121,7 @@ All phases complete. Firebase migration done. Database live on Supabase with see
 | 11 | Dashboard UI Overhaul — "Industrial Command Center" | Done (~70 files, pure visual, zero logic changes) |
 | 12 | Full integration verification + bug fixes | Done — all servers verified, public API routes fixed, RBAC added |
 | 13 | Uniform Dark Theme — Worker App & Citizen Portal | Done (~30 files, pure visual, zero logic changes) |
+| 14 | Unified Login Portal — Citizen Portal | Done (role-selection page at `/login`) |
 
 ### Configuration Status
 
@@ -209,6 +210,15 @@ Extended the dashboard's dark industrial design system to `apps/worker-app/` and
 - PublicHeatmapPage: Safety-color summary cards, CartoDB dark map tiles, updated RISK_COLORS hex values to match design tokens
 
 **Map Tiles**: Both citizen portal maps switched from OSM light tiles to CartoDB dark tiles (`dark_all`).
+
+### Unified Login Portal (Phase 14)
+
+Single entry point for staff login at `apps/citizen-portal/src/pages/LoginPortalPage.tsx`. Accessible via `/login` route in the citizen portal with a "Login" nav link in the header.
+
+- Single card with role selection: **Admin/Supervisor** → redirects to Dashboard login, **Worker** → redirects to Worker App login
+- Uses `window.location.href` for cross-app redirect (not React Router)
+- URLs from env vars: `VITE_DASHBOARD_URL` (default `http://localhost:3000`), `VITE_WORKER_APP_URL` (default `http://localhost:3001`)
+- Dark industrial theme (card-surface, btn-primary, font-heading, animate-fade-in-up)
 
 ### Role-Based Access Control
 - **Dashboard**: Restricted to `ADMIN` and `SUPERVISOR` roles only. `ProtectedRoute` in `App.tsx` checks `user.role` against `['ADMIN', 'SUPERVISOR']`. Workers redirected to login with "Access denied" message advising use of Worker App.
